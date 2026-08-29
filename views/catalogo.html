@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Catálogo - heavylux</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!--BARRA SUPERIOR-->
+        <div class="top-bar">
+            <p>ENVIOS A TODO EL META · WHATSAPP +57 313 734 9236 · LUN-SÁB 8AM-6PM</p>
+        </div>
+        <!--NAVEGACIÓN-->
+        <nav class="navbar">
+            <div class="logo">
+                <span class="logo-heavy">HEAVY</span> 
+                <span class="logo-lux">LUX</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/catalogo">Catálogo</a></li>
+                <li><a href="/cotizar">Cotizar</a></li>
+                <li><a href="/contacto">Contacto</a></li>
+            </ul>
+            <a href="https://wa.me/573137349236" class="btn-whatsapp">WhatsApp</a>
+        </nav>
+        <!--CATÁLOGO-->
+        <section class="catalogo">
+            <div class="catalogo-header">
+                <h1>Catálogo de productos</h1>
+                <p>Encuentra los repuestos y accesorios para tu vehiculo</p>
+            </div>
+            <div class="catalogo-busqueda">
+                <input type="text" id="buscar-producto" placeholder="🔍 Buscar...">
+            </div>
+            <div class="catalogo-filtros">
+                <button class="filtro-btn activo">Todos</button>
+                <button class="filtro-btn">Repuestos</button>
+                <button class="filtro-btn">Iluminación LED</button>
+                <button class="filtro-btn">Lujos y accesorios</button>
+                <button class="filtro-btn">Suspensión</button>
+                <button class="filtro-btn">Dirección</button>
+                <button class="filtro-btn">Transmisión</button>
+            </div>
+            <div class="productos-grid" id="productos-grid">
+                <p style="color: #aaaaaa">Cargando productos...</p>
+            </div>
+        </section>
+        <!--FOOTER-->
+        <footer class="footer">
+            <p><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></p>
+            <p>Acacías, Meta · heavylux@gmail.com</p>
+            <p>© 2026 HeavyLux · Todos los derechos reservados</p> 
+        </footer>
+    <script>
+        let todosLosProductos = [];
+        fetch('/api/productos')
+        .then(res => res.json())
+        .then(data => {
+            todosLosProductos = data;
+            mostrarProductos(data);
+        })
+        .catch(err => {
+            document.getElementById('productos-grid').innerHTML = '<p style="color:#ff0000">Error al cargar productos.</p>';
+        })
+        function mostrarProductos(productos) {
+            const grid = document.getElementById('productos-grid');
+            if (productos.length=== 0){
+                grid.innerHTML = '<p style="color:#aaaaaa">No se encontraron productos.</p>';
+            return;
+            }
+            grid.innerHTML = productos.map(p => `
+                <div class="producto-card">
+                    <div class="producto-imagen">
+                        <img src="/images/${p.imagen}" alt="${p.nombre}">
+                </div>
+                    <div class="producto-info">
+                        <span class="producto-categoria">${p.categoria}</span>
+                        <h3>${p.nombre}</h3>
+                        <p class="producto-precio">$${Number(p.precio).toLocaleString('es-CO')}</p>
+                        <div class="producto-botones">
+                            <a href="#" class="btn-primary">Ver detalle</a>
+                            <a href="/cotizar" class="btn-secondary">Cotizar</a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        document.getElementById('buscar-producto').addEventListener('input', (e) => {
+        const busqueda = e.target.value.toLowerCase();
+        const filtrados = todosLosProductos.filter(p =>
+            p.nombre.toLowerCase().includes(busqueda) ||
+            p.categoria.toLowerCase().includes(busqueda) ||
+            p.descripcion.toLowerCase().includes(busqueda)
+        );
+        mostrarProductos(filtrados);
+        });
+        document.querySelectorAll('.filtro-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('activo'));
+        btn.classList.add('activo');
+        const categoria = btn.textContent;
+        if (categoria === 'Todos') {
+            mostrarProductos(todosLosProductos);
+        } else {
+            const filtrados = todosLosProductos.filter(p => p.categoria === categoria);
+            mostrarProductos(filtrados);
+        }
+    });
+});  
+    </script>        
+</body>
+</html>

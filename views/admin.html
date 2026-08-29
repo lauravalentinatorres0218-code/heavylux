@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin - HeavyLux</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<!--BARRA SUPERIOR-->
+<div class="top-bar">
+    <p>PANEL ADMINISTRATIVO · HEAVYLUX</p>
+</div>
+<!--NAVEGACIÓN-->
+<nav class="navbar">
+    <div class="logo">
+        <span class="logo-heavy">HEAVY</span>
+        <span class="logo-LUX">LUX</span>
+    </div>
+    <ul class="nav-links">
+        <li><a href="/admin">Dashboard</a></li>
+        <li><a href="/admin/cotizaciones">Cotizaciones</a></li>
+        <li><a href="/admin/productos">Productos</a></li>
+    </ul>
+    <a href="/" class="btn-whatsapp">Ver sitio</a>
+</nav>
+<!--DASHBOARD-->
+<section class="admin-dashboard">
+    <h1>PANEL ADMINISTRATIVO</h1>
+    <div class="admin-cards">
+        <div class="admin-card">
+            <h3>Cotizaciones</h3>
+            <p class="admin-numero">0</p>
+            <p class="admin-sub">Total recibidas</p>
+            <a href="/admin/cotizaciones" class="btn-primary">Ver todas</a>
+        </div>
+        <div class="admin-card">
+            <h3>Productos</h3>
+            <p class="admin-numero">4</p>
+            <p class="admin-sub">En catálogo</p>
+            <a href="/admin/productos" class="btn-primary">Ver todos</a>
+        </div>
+        <div class="admin-card">
+            <h3>Usuarios</h3>
+            <p class="admin-numero">0</p>
+            <p class="admin-sub">Registrados</p>
+            <a href="#" class="btn-primary">Ver todos</a>
+        </div>
+    </div>
+    <div class="admin-seccion">
+        <h2>Cotizaciones recientes</h2>
+        <table class="admin-tabla">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Telefono</th>
+                    <th>Correo</th>
+                    <th>Producto</th>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody id="cotizaciones-tbody">
+                <tr>
+                    <td colspan="7">Cargando cotizaciones...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="admin-seccion">
+        <h2>Agregar producto</h2>
+        <form class="cotizar-form" id="form-producto">
+            <div class="form-group">
+                <label>Nombre</label>
+                <input type="text" id="prod-nombre" placeholder="Nombre del producto" required>
+            </div>
+            <div class="form-group">
+                <label>Descripcion</label>
+                <textarea id="prod-descripcion" placeholder="Descripcion" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Precio</label>
+                <input type="number" id="prod-precio" placeholder="Precio en pesos" required>
+            </div>
+            <div class="form-group">
+                <label>Stock</label>
+                <input type="number" id="prod-stock" placeholder="Cantidad disponible" required>
+            </div>
+            <div class="form-group">
+                <label>Categoría</label>
+                <select id="prod-categoria">
+                    <option>Iluminación LED</option>
+                    <option>Repuestos</option>
+                    <option>Lujos y accesorios</option>
+                    <option>Suspención</option>
+                    <option>Dirección</option>
+                    <option>Transmisión</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Imagen</label>
+                <input type="text" id="prod-imagen" placeholder="nombre-imagen.jpg">
+            </div>
+            <button type="submit" class="btn-submit">Agregar producto</button>
+        </form>
+    </div>   
+</section>
+<!--FOOTER-->
+<footer class="footer">
+    <p><span class="logo-heavy">HEAVY</span><span class="logo-LUX">LUX</span></p>
+    <p>© 2026 HeavyLux · Panel Administrativo</p>
+</footer>
+<script>
+    fetch(`/admin/cotizaciones`)
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.getElementById('cotizaciones-tbody');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7">No hay cotizaciones recientes.</td></tr>';
+                return;
+            }  
+                tbody.innerHTML = data.map(cotizacion => `
+                    <tr>
+                        <td>${cotizacion.id}</td>
+                        <td>${cotizacion.nombre}</td>
+                        <td>${cotizacion.telefono}</td>
+                        <td>${cotizacion.correo}</td>
+                        <td>${cotizacion.productos_interes || '-'}</td>
+                        <td>${cotizacion.estado}</td>
+                        <td>${new Date(cotizacion.fecha).toLocaleString()}</td>
+                    </tr>
+                `).join('');
+                document.querySelector(`.admin-numero`).textContent = data.length;
+                })
+                .catch(err => console.error(`Error:`));
+        document.getElementById('form-producto').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const producto = {
+            nombre: document.getElementById('prod-nombre').value,
+            descripcion: document.getElementById('prod-descripcion').value,
+            precio: document.getElementById('prod-precio').value,
+            stock: document.getElementById('prod-stock').value,
+            categoria: document.getElementById('prod-categoria').value,
+            imagen: document.getElementById('prod-imagen').value
+        };
+        fetch('/api/productos',{
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(producto)
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert('Producto agregado exitosamente');
+            location.reload();
+        })
+        .catch(err => console.error('Error:', err));
+    });
+        
+        
+</script>
+    
+
+</body>
+</html>

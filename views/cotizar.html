@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotizar - HeavyLux</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!--BARRA SUPERIOR-->
+    <div class="top-bar">
+        <p>ENVIOS A TODO EL META · WHATSAPP +57 313 734 9236 · LUN-SÁB 8AM-6PM</p>
+    </div>
+
+    <!--NAVEGACION-->
+    <nav class="navbar">
+        <div class="logo">
+            <span class="logo-heavy">HEAVY</span>
+            <span class="logo-lux">LUX</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/">Inicio</a></li>
+            <li><a href="/catalogo">Catálogo</a></li>
+            <li><a href="/cotizar">Cotizar</a></li>
+            <li><a href="/contacto">Contacto</a></li>
+        </ul>
+        <a href="https://wa.me/573137349236" class="btn-whatsapp">WhatsApp</a>
+    </nav>
+    <!--CONTENIDO PRINCIPAL-->
+    <section class="cotizar">
+        <div class="cotizar-header">
+            <h1>Solicitar Cotización</h1>
+            <p>Diligenciar el formulario y te contactamos en menos de 24 horas</p>
+        </div>
+        <form class="cotizar-form" action="/cotizar" method="POST">
+            <div class="form-group">
+                <label for="nombre">Nombre Completo</label>
+                <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
+            </div>
+            <div class="form-group">
+                <label for="telefono">Telefono</label>
+                <input type="tel" id="telefono" name="telefono" placeholder="Tu numero de contacto" required>
+            </div>
+            <div class="form-group">
+                <label for="correo">Correo electrónico</label>
+                <input type="email" id="correo" name="correo" placeholder="Tu correo" required>
+            </div>
+            <div class="form-group">
+                <label for="productos">Productos de interés</label>
+                <textarea id="productos" name="productos_interes" placeholder="¿Qué productos te interesan?" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="observaciones">Observaciones</label>
+                <textarea id="observaciones" name="observaciones" placeholder="Informacion adicional" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn-submit">Enviar solicitud</button>
+        </form>
+    </section>
+    <!--FOOTER-->
+    <footer class="footer">
+        <p><span class="logo-heavy">HEAVY</span> <span class="logo-lux">LUX</span> </p>
+        <p>Acacías, Meta · heavylux@gmail.com</p>
+        <p>© 2026 HeavyLux · Todos los derechos reservados</p>
+    </footer>
+
+</body>
+</html>
