@@ -2,6 +2,28 @@ const express = require("express")
 const path = require("path");
 require("dotenv").config();
 const db = require(`./models/db`);
+db.query(`CREATE TABLE IF NOT EXISTS productos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    descripcion TEXT,
+    precio DECIMAL(10,2),
+    stock INT,
+    categoria VARCHAR(100),
+    imagen VARCHAR(255)
+)`, (err) => { if (err) console.error(err); });
+
+db.query(`CREATE TABLE IF NOT EXISTS cotizaciones (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255),
+    empresa VARCHAR(255),
+    telefono VARCHAR(20),
+    correo VARCHAR(255),
+    productos_intereses TEXT,
+    observaciones TEXT,
+    estado VARCHAR(50) DEFAULT 'pendiente',
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)`, (err) => { if (err) console.error(err); });
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(express.json());
