@@ -1,6 +1,5 @@
 const express = require("express")
 const path = require("path");
-require("dotenv").config();
 const db = require(`./models/db`);
 db.query(`CREATE TABLE IF NOT EXISTS productos (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -18,7 +17,7 @@ db.query(`CREATE TABLE IF NOT EXISTS cotizaciones (
     empresa VARCHAR(255),
     telefono VARCHAR(20),
     correo VARCHAR(255),
-    productos_intereses TEXT,
+    productos_interes TEXT,
     observaciones TEXT,
     estado VARCHAR(50) DEFAULT 'pendiente',
     fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
