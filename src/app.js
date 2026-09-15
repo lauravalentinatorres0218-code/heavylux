@@ -1,6 +1,7 @@
 const express = require("express")
 const path = require("path");
 const db = require(`./models/db`);
+require("dotenv").config();
 db.query(`CREATE TABLE IF NOT EXISTS productos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL,

@@ -36,7 +36,7 @@
         </div>
         <div class="admin-card">
             <h3>Productos</h3>
-            <p class="admin-numero">4</p>
+            <p class="admin-numero" id="contador-productos">0</p>
             <p class="admin-sub">En catálogo</p>
             <a href="/admin/productos" class="btn-primary">Ver todos</a>
         </div>
@@ -156,7 +156,12 @@
         })
         .catch(err => console.error('Error:', err));
     });
-        
+  fetch('/api/productos')
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById('contador-productos').textContent = data.length;
+    })
+    .catch(err => console.error('Error:', err));      
         
 </script>
     
