@@ -25,6 +25,22 @@ db.query(`CREATE TABLE IF NOT EXISTS cotizaciones (
 )`, (err) => { if (err) console.error(err); });
 
 const app = express();
+const session = require('express-session');
+
+function verificarSesion(req, res, next) {
+    if (req.session.usuario) {
+        next();
+    } else {
+        res.redirect('/login');
+    }
+}
+
+app.use(session({
+    secret: 'heavylux-secret-2026',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false }
+}));
 const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
@@ -57,7 +73,7 @@ app.post(`/cotizar`, (req, res) => {
         res.send(`Cotización enviada exitosamente`);
     });
 });
-app.get(`/admin`, (req, res) => {
+app.get(`/admin`, verificarSesion, (req, res) => {
     res.sendFile(path.join(__dirname, `../views/admin.html`));
 });
 app.get(`/admin/cotizaciones`, (req, res) => {
@@ -70,6 +86,32 @@ app.get(`/admin/cotizaciones`, (req, res) => {
         }
         res.json(results);
     });
+});
+const bcrypt = require('bcrypt');
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, '../views/login.html'));
+});
+app.post('/login', (req, res) => {
+    const { correo, password } = req.body;
+    const sql = 'SELECT * FROM usuarios WHERE correo = ?';
+    db.query(sql, [correo], async (err, results) => {
+        if (err || results.length === 0) {
+            return res.redirect('/login?error=1');
+        }
+        const usuario = results[0];
+        const match = await bcrypt.compare(password, usuario.password);
+        if (match) {
+            req.session.usuario = usuario;
+            res.redirect('/admin');
+        } else {
+            res.redirect('/login?error=1');
+        }
+    });
+});
+
+app.get('/logout', (req, res) => {
+    req.session.destroy();
+    res.redirect('/login');
 });
 app.get(`/api/productos`, (req, res) => {
     const sql = `SELECT * FROM productos`;

@@ -458,3 +458,43 @@ body{
 .catalogo-busqueda input::placeholder {
     color:#555555;
 }
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #0a0a0a0a
+}
+.login-box {
+    background-color: #1a1a1a;
+    border: 1px solid #333333;
+    border-radius: 10px;
+    padding: 40px;
+    width: 100%;
+    max-width: center;
+}
+.login-logo {
+    font-size: 28px;
+    font-weight:900;
+    margin-bottom: 10px;
+}
+.login-box h2 {
+    font-size: 18px;
+    color: #ffffff;
+    margin-bottom: 5px;
+}
+.login-sub {
+    color: #aaaaaa;
+    font-size: 13px;
+    margin-bottom: 25px;
+}
+.login-form .form-group input {
+        background-color: #111111;
+    border: 1px solid #333333;
+    border-radius: 6px;
+    padding: 12px;
+    color: #ffffff;
+    font-size: 14px;
+    width: 100%;
+    font-family: Arial, sans-serif;
+}
