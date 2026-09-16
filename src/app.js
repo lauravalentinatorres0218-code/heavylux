@@ -24,6 +24,13 @@ db.query(`CREATE TABLE IF NOT EXISTS cotizaciones (
     fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )`, (err) => { if (err) console.error(err); });
 
+db.query(`INSERT IGNORE INTO productos (id, nombre, descripcion, precio, stock, categoria, imagen) VALUES
+(1, 'Barra LED 48" Pro Series', 'Barra LED de alta potencia para vehículos de carga pesada', 890000, 10, 'Iluminación LED', 'producto1.jpg'),
+(2, 'Filtro de aceite Kenworth', 'Filtro de aceite original para tractocamiones Kenworth', 95000, 25, 'Repuestos', 'producto2.jpg'),
+(3, 'Cromado espejo lateral', 'Espejo lateral cromado para volquetas y tractomulas', 220000, 15, 'Lujos y accesorios', 'producto3.jpg'),
+(4, 'Amortiguador trasero volqueta', 'Amortiguador trasero reforzado para volquetas', 350000, 8, 'Suspensión', 'producto4.jpg')
+`, (err) => { if (err) console.error(err); });
+
 const app = express();
 const session = require('express-session');
 
