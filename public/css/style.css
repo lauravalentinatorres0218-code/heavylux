@@ -44,14 +44,39 @@ body{
     background-color: #aa0000;
 }
 .logo-heavy{
-    color: #ffffff;
-    font-size: 24px;
+    font-family:Arial, Helvetica, sans-serif;
     font-weight: 900;
+    font-size: 20px;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+}
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+.logo-bars {
+    display: flex;
+    gap: 3px;
+}
+.logo-bar {
+    width: 4px;
+    height: 36px;
+    background-color: #CC0000;
+    border-radius: 1px;
+}
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
 }
 .logo-lux{
-    color: #CC0000;
-    font-size: 24px;
-    font-weight: 900;
+    font-family:Arial, Helvetica, sans-serif;
+    font-weight: 500;
+    font-size: 9px;
+    color: #B0B0B0;
+    letter-spacing: 5px;   
 }
 .nav-links{
     list-style: none;
