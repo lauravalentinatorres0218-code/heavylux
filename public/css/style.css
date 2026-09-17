@@ -43,13 +43,6 @@ body{
 .btn-carrito:hover {
     background-color: #aa0000;
 }
-.logo-heavy{
-    font-family:Arial, Helvetica, sans-serif;
-    font-weight: 900;
-    font-size: 20px;
-    color: #ffffff;
-    letter-spacing: -0.5px;
-}
 .logo {
     display: flex;
     align-items: center;
@@ -70,6 +63,13 @@ body{
     display: flex;
     flex-direction: column;
     line-height: 1;
+}
+.logo-heavy{
+    font-family:Arial, Helvetica, sans-serif;
+    font-weight: 900;
+    font-size: 20px;
+    color: #ffffff;
+    letter-spacing: -0.5px;
 }
 .logo-lux{
     font-family:Arial, Helvetica, sans-serif;
