@@ -7,22 +7,22 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-      <!--BARRA SUPERIOR-->
+   <!--BARRA SUPERIOR-->
    <div class="top-bar">
       <p>ENVIOS A TODO EL META · WHATSAPP +57 313 734 9236 · LUN-SÁB 8AM-6PM </p>
    </div>
-    <!--NAVEGACIÓN-->
-<nav class="navbar">
-    <div class="logo">
-        <div class="logo-bars">
+   <!--NAVEGACIÓN-->
+   <nav class="navbar">
+      <div class="logo">
+         <div class="logo-bars">
             <div class="logo-bar"></div>
             <div class="logo-bar"></div>
-        </div>
-        <div class="logo-text">
+         </div>
+         <div class="logo-text">
             <span class="logo-heavy">HEAVY</span>
             <span class="logo-LUX">LUX</span>
-        </div>
-    </div>
+         </div>
+      </div>
       <ul class="nav-links">
             <li><a href="/">INICIO</a></li>
             <li><a href="/catalogo">CATÁLOGO</a></li>
@@ -34,24 +34,34 @@
             <a href="/cuenta" class="navbar-icon">👤 CUENTA</a>
             <a href="/carrito" class="navbar-icon btn-carrito">🛒 CARRITO</a>
       </div>
-</nav>
-    <!--HERO-->
-    <section class="hero">
-    <div class="hero-content">
-        <p class="hero-sub">Acacias, Meta · Colombia</p>
-        <h1>Repuestos e iluminacion para tu<span> vehiculo</span></h1>
-        <p>Cotiza en linea y recibe en tu municipio.</p>
-        <div class="hero-buttons">
-         <a href="/catalogo" class="btn-primary">Ver ctálogo</a>
-         <a href="/cotizar" class="btn-secondary">Cotizar ahora</a>
-        </div>
-    </div>
+   </nav>
+   <!--HERO-->
+   <section class="hero">
+      <div class="hero-content">
+         <p class="hero-sub">Acacias, Meta · Colombia</p>
+         <h1>Repuestos e iluminacion para tu<span> vehiculo</span></h1>
+         <p>Cotiza en linea y recibe en tu municipio.</p>
+         <div class="hero-buttons">
+            <a href="/catalogo" class="btn-primary">Ver ctálogo</a>
+            <a href="/cotizar" class="btn-secondary">Cotizar ahora</a>
+         </div>
+      </div>
+      <div class="hero-search">
+         <input type="text" id="hero-buscar" placeholder="Buscar repuesto, marca, referencia...">
+         <button onclick="buscarProducto()">🔍 BUSCAR</button>
+      </div>
+      <div class="hero-tags">
+         <span onclick="irACatalogo('Repuestos')">Filtros Volvo</span>
+         <span onclick="irACatalogo('Iluminación LED')">LED 48"</span>
+         <span onclick="irACatalogo('Repuestos')">Frenos Scania</span>
+         <span onclick="irACatalogo('Repuestos')">Turbo Cummins</span>
+      </div>
    
-    </section>
-    <!--CATEGORIAS-->
-    <section class="categorias">
-        <h2>Categorias principales</h2>
-        <div class="categorias-grid">
+   </section>
+   <!--CATEGORIAS-->
+   <section class="categorias">
+      <h2>Categorias principales</h2>
+      <div class="categorias-grid">
          <div class="categoria-card">
             <h3>Repuestos</h3>
          </div>  
@@ -70,13 +80,27 @@
          <div class="categoria-card">
             <h3>Transmisión</h3>
          </div>
-        </div>
-    </section>
-    <!-- FOOTER -->
-     <footer class="footer">
-        <p><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></p>
-        <p>Acacías, Meta · heavylux@gmail.com</p>
-        <p>© 2026 HeavyLux · Todos los derechos reservados</p>
-     </footer>
+      </div>
+   </section>
+   <!-- FOOTER -->
+   <footer class="footer">
+      <p><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></p>
+      <p>Acacías, Meta · heavylux@gmail.com</p>
+      <p>© 2026 HeavyLux · Todos los derechos reservados</p>
+   </footer>
+   <script>
+      function buscarProducto() {
+         const busqueda = document.getElementById('hero-buscar').value;
+         window.location.href = '/catalogo?buscar=' + busqueda;
+         }
+
+      function irACatalogo(categoria) {
+         window.location.href = '/catalogo?categoria=' + categoria;
+         }
+
+      document.getElementById('hero-buscar').addEventListener('keypress', (e) => {
+         if (e.key === 'Enter') buscarProducto();
+      });
+   </script>
 </body>
 </html>
