@@ -98,6 +98,26 @@
                 <label>Stock</label>
                 <input type="number" id="prod-stock" placeholder="Cantidad disponible" required>
             </div>
+            <div class="admin-seccion">
+                <h2>Productos en catálogo</h2>
+                <table class="admin-tabla">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Precio</th>
+                            <th>Categoría</th>
+                            <th>Stock</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productos-tbody">
+                        <tr>
+                            <td colspan="6">Cargando productos...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <div class="form-group">
                 <label>Categoría</label>
                 <select id="prod-categoria">
@@ -123,29 +143,70 @@
     <p>© 2026 HeavyLux · Panel Administrativo</p>
 </footer>
 <script>
-    fetch(`/admin/cotizaciones`)
+    fetch('/admin/cotizaciones')
         .then(res => res.json())
         .then(data => {
             const tbody = document.getElementById('cotizaciones-tbody');
             if (data.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="7">No hay cotizaciones recientes.</td></tr>';
                 return;
-            }  
-                tbody.innerHTML = data.map(cotizacion => `
+            }
+            tbody.innerHTML = data.map(cotizacion => `
+                <tr>
+                    <td>${cotizacion.id}</td>
+                    <td>${cotizacion.nombre}</td>
+                    <td>${cotizacion.telefono}</td>
+                    <td>${cotizacion.correo}</td>
+                    <td>${cotizacion.productos_interes || '-'}</td>
+                    <td>${cotizacion.estado}</td>
+                    <td>${new Date(cotizacion.fecha).toLocaleString()}</td>
+                </tr>
+            `).join('');
+            document.querySelector('.admin-numero').textContent = data.length;
+        })
+        .catch(err => console.error('Error:', err));
+
+    function cargarProductos() {
+        fetch('/api/productos')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.getElementById('productos-tbody');
+                document.getElementById('contador-productos').textContent = data.length;
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6">No hay productos.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = data.map(p => `
                     <tr>
-                        <td>${cotizacion.id}</td>
-                        <td>${cotizacion.nombre}</td>
-                        <td>${cotizacion.telefono}</td>
-                        <td>${cotizacion.correo}</td>
-                        <td>${cotizacion.productos_interes || '-'}</td>
-                        <td>${cotizacion.estado}</td>
-                        <td>${new Date(cotizacion.fecha).toLocaleString()}</td>
+                        <td>${p.id}</td>
+                        <td>${p.nombre}</td>
+                        <td>$${Number(p.precio).toLocaleString('es-CO')}</td>
+                        <td>${p.categoria}</td>
+                        <td>${p.stock}</td>
+                        <td>
+                            <button onclick="eliminarProducto(${p.id})" style="background:#CC0000; color:#fff; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;">Eliminar</button>
+                        </td>
                     </tr>
                 `).join('');
-                document.querySelector(`.admin-numero`).textContent = data.length;
+            })
+            .catch(err => console.error('Error:', err));
+    }
+
+    function eliminarProducto(id) {
+        if (confirm('¿Seguro que quieres eliminar este producto?')) {
+            fetch(`/api/productos/${id}`, { method: 'DELETE' })
+                .then(res => res.json())
+                .then(data => {
+                    alert('Producto eliminado');
+                    cargarProductos();
                 })
-                .catch(err => console.error(`Error:`));
-        document.getElementById('form-producto').addEventListener('submit', (e) => {
+                .catch(err => console.error('Error:', err));
+        }
+    }
+
+    cargarProductos();
+
+    document.getElementById('form-producto').addEventListener('submit', (e) => {
         e.preventDefault();
         const producto = {
             nombre: document.getElementById('prod-nombre').value,
@@ -155,7 +216,7 @@
             categoria: document.getElementById('prod-categoria').value,
             imagen: document.getElementById('prod-imagen').value
         };
-        fetch('/api/productos',{
+        fetch('/api/productos', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(producto)
@@ -163,19 +224,10 @@
         .then(res => res.json())
         .then(data => {
             alert('Producto agregado exitosamente');
-            location.reload();
+            cargarProductos();
         })
         .catch(err => console.error('Error:', err));
     });
-  fetch('/api/productos')
-    .then(res => res.json())
-    .then(data => {
-        document.getElementById('contador-productos').textContent = data.length;
-    })
-    .catch(err => console.error('Error:', err));      
-        
 </script>
-    
-
 </body>
 </html>

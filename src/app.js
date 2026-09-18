@@ -146,3 +146,15 @@ app.post('/api/productos', (req, res) => {
         res.json({ mensaje: 'Producto agregado exitosamente', id: result.insertId });
     });
 });
+app.delete('/api/productos/:id', (req, res) => {
+    const { id } = req.params;
+    const sql = `DELETE FROM productos WHERE id = ?`;
+    db.query(sql, [id], (err, result) => {
+        if (err) {
+            console.error('Error eliminando producto:', err);
+            res.status(500).json({ error: 'Error al eliminar producto' });
+            return;
+        }
+        res.json({ mensaje: 'Producto eliminado exitosamente' });
+    });
+});
