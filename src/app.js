@@ -67,6 +67,9 @@ app.get(`/cotizar`, (req, res) => {
 app.get(`/contacto`, (req, res) => {
     res.sendFile(path.join(__dirname, `../views/contacto.html`));
 });
+app.get(`/nosotros`, (req, res) => {
+    res.sendFile(path.join(__dirname, `../views/nosotros.html`));
+});
 app.post(`/cotizar`, (req, res) => {
     const { nombre, telefono, correo, productos_interes, observaciones} = req.body;
 
