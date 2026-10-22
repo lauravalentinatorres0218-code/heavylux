@@ -69,7 +69,26 @@
         .then(res => res.json())
         .then(data => {
             todosLosProductos = data;
-            mostrarProductos(data);
+            const params = new URLSearchParams(window.location.search);
+            const buscar = params.get('buscar');
+            const categoria = params.get('categoria');
+
+            if (buscar) {
+                document.getElementById('buscar-producto').value = buscar;
+                const q = buscar.toLowerCase();
+                mostrarProductos(data.filter(p =>
+                    p.nombre.toLowerCase().includes(q) ||
+                    p.categoria.toLowerCase().includes(q) ||
+                    (p.descripcion || '').toLowerCase().includes(q)
+                ));
+            } else if (categoria) {
+                mostrarProductos(data.filter(p => p.categoria === categoria));
+                document.querySelectorAll('.filtro-btn').forEach(b => {
+                    b.classList.toggle('activo', b.textContent === categoria);
+                });
+            } else {
+                mostrarProductos(data);
+            }
         })
         .catch(err => {
             document.getElementById('productos-grid').innerHTML = '<p style="color:#ff0000">Error al cargar productos.</p>';
