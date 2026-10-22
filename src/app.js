@@ -189,3 +189,11 @@ app.get('/api/usuarios/total', verificarSesion, (req, res) => {
         res.json({ total: results[0].total });
     });
 });
+app.get('/cuenta', verificarSesion, (req, res) => {
+    res.sendFile(path.join(__dirname, '../views/cuenta.html'));
+});
+
+app.get('/api/cuenta', verificarSesion, (req, res) => {
+    const { nombre, correo, rol } = req.session.usuario;
+    res.json({ nombre, correo, rol });
+});

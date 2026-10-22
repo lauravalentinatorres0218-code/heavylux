@@ -719,3 +719,37 @@ body{
     font-size: 13px;
     margin-bottom: 25px;
 }
+.cuenta {
+    padding: 60px 40px;
+    background-color: #111111;
+    min-height: 60vh;
+    display: flex;
+    justify-content: center;
+}
+.cuenta-box {
+    background-color: #1a1a1a;
+    border: 1px solid #333333;
+    border-radius: 10px;
+    padding: 40px;
+    width: 100%;
+    max-width: 450px;
+}
+.cuenta-box h1 {
+    font-size: 26px;
+    font-weight: 900;
+    margin-bottom: 25px;
+}
+.cuenta-dato {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #333333;
+    font-size: 14px;
+}
+.cuenta-dato span {
+    color: #aaaaaa;
+}
+.cuenta-box .btn-primary {
+    display: inline-block;
+    margin-top: 25px;
+}
