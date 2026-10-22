@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Producto - HeavyLux</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="top-bar">
+        <p>ENVIOS A TODO EL META · WHATSAPP +57 313 734 9236 · LUN-SÁB 8AM-6PM</p>
+    </div>
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-bars">
+                <div class="logo-bar"></div>
+                <div class="logo-bar"></div>
+            </div>
+            <div class="logo-text">
+                <span class="logo-heavy">HEAVY</span>
+                <span class="logo-lux">LUX</span>
+            </div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/">INICIO</a></li>
+            <li><a href="/catalogo">CATÁLOGO</a></li>
+            <li><a href="/cotizar">COTIZAR</a></li>
+            <li><a href="/nosotros">NOSOTROS</a></li>
+            <li><a href="/contacto">CONTACTO</a></li>
+        </ul>
+        <div class="navbar-actions">
+            <a href="/cuenta" class="navbar-icon">👤 CUENTA</a>
+            <a href="/carrito" class="navbar-icon btn-carrito">🛒 CARRITO</a>
+        </div>
+    </nav>
+
+    <section class="detalle">
+        <a href="/catalogo" class="detalle-volver">← Volver al catálogo</a>
+        <div class="detalle-grid" id="detalle-contenido">
+            <p style="color:#aaaaaa">Cargando producto...</p>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></p>
+        <p>Acacías, Meta · heavylux@gmail.com</p>
+        <p>© 2026 HeavyLux · Todos los derechos reservados</p>
+    </footer>
+
+    <script>
+        const id = window.location.pathname.split('/').pop();
+        fetch('/api/productos/' + id)
+            .then(res => {
+                if (!res.ok) throw new Error('No encontrado');
+                return res.json();
+            })
+            .then(p => {
+                document.title = p.nombre + ' - HeavyLux';
+                document.getElementById('detalle-contenido').innerHTML = `
+                    <div class="detalle-imagen">
+                        <img src="/images/${p.imagen}" alt="${p.nombre}">
+                    </div>
+                    <div class="detalle-info">
+                        <span class="producto-categoria">${p.categoria}</span>
+                        <h1>${p.nombre}</h1>
+                        <p class="detalle-precio">$${Number(p.precio).toLocaleString('es-CO')}</p>
+                        <p class="detalle-desc">${p.descripcion || ''}</p>
+                        <p class="detalle-stock">Disponibles: ${p.stock} unidades</p>
+                        <a href="/cotizar" class="btn-primary">Cotizar este producto</a>
+                    </div>
+                `;
+            })
+            .catch(() => {
+                document.getElementById('detalle-contenido').innerHTML =
+                    '<p style="color:#ff0000">Producto no encontrado.</p>';
+            });
+    </script>
+</body>
+</html>

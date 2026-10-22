@@ -158,3 +158,15 @@ app.delete('/api/productos/:id', (req, res) => {
         res.json({ mensaje: 'Producto eliminado exitosamente' });
     });
 });
+app.get('/producto/:id', (req, res) => {
+    res.sendFile(path.join(__dirname, '../views/producto.html'));
+});
+
+app.get('/api/productos/:id', (req, res) => {
+    db.query('SELECT * FROM productos WHERE id = ?', [req.params.id], (err, results) => {
+        if (err || results.length === 0) {
+            return res.status(404).json({ error: 'Producto no encontrado' });
+        }
+        res.json(results[0]);
+    });
+});
