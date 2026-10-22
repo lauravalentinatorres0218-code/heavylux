@@ -641,3 +641,27 @@ body{
     background-color: #CC0000;
     border-color: #CC0000;
 }
+.stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background-color: #0a0a0a;
+    border-bottom: 1px solid #333333;
+}
+.stat-item {
+    padding: 24px;
+    text-align: center;
+    border-right: 1px solid #333333;
+}
+.stat-item:last-child {
+    border-right: none;
+}
+.stat-item h3 {
+    color: #CC0000;
+    font-size: 28px;
+    font-weight: 900;
+    margin-bottom: 4px;
+}
+.stat-item p {
+    color: #aaaaaa;
+    font-size: 13px;
+}
