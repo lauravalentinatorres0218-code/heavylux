@@ -93,6 +93,14 @@
         .catch(err => {
             document.getElementById('productos-grid').innerHTML = '<p style="color:#ff0000">Error al cargar productos.</p>';
         })
+                function agregarAlCarrito(id, nombre, precio) {
+            const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
+            if (!carrito.some(p => p.id === id)) {
+                carrito.push({ id, nombre, precio });
+                localStorage.setItem('carrito', JSON.stringify(carrito));
+            }
+            alert(nombre + ' agregado al carrito');
+        }
         function mostrarProductos(productos) {
             const grid = document.getElementById('productos-grid');
             if (productos.length=== 0){
@@ -110,8 +118,7 @@
                         <p class="producto-precio">$${Number(p.precio).toLocaleString('es-CO')}</p>
                         <div class="producto-botones">
                         <a href="/producto/${p.id}" class="btn-primary">Ver detalle</a>                            
-                        <a href="/cotizar" class="btn-secondary">Cotizar</a>
-                        </div>
+                        <a href="#" class="btn-secondary" onclick="agregarAlCarrito(${p.id}, '${p.nombre.replace(/'/g, "\\'")}', ${p.precio}); return false;">+ Carrito</a>                        </div>
                     </div>
                 </div>
             `).join('');

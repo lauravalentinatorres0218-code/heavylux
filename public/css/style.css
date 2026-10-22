@@ -753,3 +753,36 @@ body{
     display: inline-block;
     margin-top: 25px;
 }
+.carrito {
+    padding: 40px;
+    background-color: #111111;
+    min-height: 60vh;
+}
+.carrito h1 {
+    font-size: 28px;
+    font-weight: 900;
+    margin-bottom: 25px;
+}
+.carrito-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 700px;
+    padding: 14px 0;
+    border-bottom: 1px solid #333333;
+    font-size: 14px;
+}
+.carrito-item button {
+    background: #CC0000;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.carrito-total {
+    color: #CC0000;
+    font-size: 22px;
+    font-weight: 700;
+    margin: 25px 0;
+}

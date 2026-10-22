@@ -197,3 +197,6 @@ app.get('/api/cuenta', verificarSesion, (req, res) => {
     const { nombre, correo, rol } = req.session.usuario;
     res.json({ nombre, correo, rol });
 });
+app.get('/carrito', (req, res) => {
+    res.sendFile(path.join(__dirname, '../views/carrito.html'));
+});

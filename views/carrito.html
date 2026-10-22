@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito - HeavyLux</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="top-bar">
+        <p>ENVIOS A TODO EL META · WHATSAPP +57 313 734 9236 · LUN-SÁB 8AM-6PM</p>
+    </div>
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-bars">
+                <div class="logo-bar"></div>
+                <div class="logo-bar"></div>
+            </div>
+            <div class="logo-text">
+                <span class="logo-heavy">HEAVY</span>
+                <span class="logo-lux">LUX</span>
+            </div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/">INICIO</a></li>
+            <li><a href="/catalogo">CATÁLOGO</a></li>
+            <li><a href="/cotizar">COTIZAR</a></li>
+            <li><a href="/nosotros">NOSOTROS</a></li>
+            <li><a href="/contacto">CONTACTO</a></li>
+        </ul>
+        <div class="navbar-actions">
+            <a href="/cuenta" class="navbar-icon">👤 CUENTA</a>
+            <a href="/carrito" class="navbar-icon btn-carrito">🛒 CARRITO</a>
+        </div>
+    </nav>
+    <section class="carrito">
+        <h1>Tu carrito</h1>
+        <div id="carrito-contenido"></div>
+    </section>
+    <footer class="footer">
+        <p><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></p>
+        <p>© 2026 HeavyLux · Todos los derechos reservados</p>
+    </footer>
+    <script>
+        function leerCarrito() {
+            return JSON.parse(localStorage.getItem('carrito') || '[]');
+        }
+        function quitar(id) {
+            const nuevo = leerCarrito().filter(p => p.id !== id);
+            localStorage.setItem('carrito', JSON.stringify(nuevo));
+            mostrar();
+        }
+        function mostrar() {
+            const items = leerCarrito();
+            const cont = document.getElementById('carrito-contenido');
+            if (items.length === 0) {
+                cont.innerHTML = '<p style="color:#aaaaaa">Tu carrito está vacío. <a href="/catalogo" style="color:#CC0000">Ver catálogo</a></p>';
+                return;
+            }
+            const total = items.reduce((s, p) => s + Number(p.precio), 0);
+            cont.innerHTML = items.map(p => `
+                <div class="carrito-item">
+                    <span>${p.nombre}</span>
+                    <span>$${Number(p.precio).toLocaleString('es-CO')}</span>
+                    <button onclick="quitar(${p.id})">Quitar</button>
+                </div>
+            `).join('') + `
+                <p class="carrito-total">Total: $${total.toLocaleString('es-CO')}</p>
+                <a href="/cotizar" class="btn-primary">Solicitar cotización</a>
+            `;
+        }
+        mostrar();
+    </script>
+</body>
+</html>
