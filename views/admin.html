@@ -81,6 +81,26 @@
         </table>
     </div>
     <div class="admin-seccion">
+        <h2>Productos en catálogo</h2>
+        <table class="admin-tabla">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Categoría</th>
+                    <th>Stock</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody id="productos-tbody">
+                <tr>
+                    <td colspan="6">Cargando productos...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="admin-seccion">
         <h2>Agregar producto</h2>
         <form class="cotizar-form" id="form-producto">
             <div class="form-group">
@@ -99,33 +119,13 @@
                 <label>Stock</label>
                 <input type="number" id="prod-stock" placeholder="Cantidad disponible" required>
             </div>
-            <div class="admin-seccion">
-                <h2>Productos en catálogo</h2>
-                <table class="admin-tabla">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Precio</th>
-                            <th>Categoría</th>
-                            <th>Stock</th>
-                            <th>Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="productos-tbody">
-                        <tr>
-                            <td colspan="6">Cargando productos...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
             <div class="form-group">
                 <label>Categoría</label>
                 <select id="prod-categoria">
                     <option>Iluminación LED</option>
                     <option>Repuestos</option>
                     <option>Lujos y accesorios</option>
-                    <option>Suspención</option>
+                    <option>Suspensión</option>
                     <option>Dirección</option>
                     <option>Transmisión</option>
                 </select>
@@ -136,7 +136,7 @@
             </div>
             <button type="submit" class="btn-submit">Agregar producto</button>
         </form>
-    </div>   
+    </div>
 </section>
 <!--FOOTER-->
 <footer class="footer">
@@ -171,6 +171,7 @@
             document.querySelector('.admin-numero').textContent = data.length;
         })
         .catch(err => console.error('Error:', err));
+        
         function cambiarEstado(id, estado) {
         fetch('/api/cotizaciones/' + id, {
             method: 'PUT',
