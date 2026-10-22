@@ -70,11 +70,12 @@
                     <th>Producto</th>
                     <th>Estado</th>
                     <th>Fecha</th>
+                    <th>Acción</th>
                 </tr>
             </thead>
             <tbody id="cotizaciones-tbody">
                 <tr>
-                    <td colspan="7">Cargando cotizaciones...</td>
+                    <td colspan="8">Cargando cotizaciones...</td>
                 </tr>
             </tbody>
         </table>
@@ -148,7 +149,7 @@
         .then(data => {
             const tbody = document.getElementById('cotizaciones-tbody');
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7">No hay cotizaciones recientes.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8">No hay cotizaciones recientes.</td></tr>';
                 return;
             }
             tbody.innerHTML = data.map(cotizacion => `
@@ -160,11 +161,23 @@
                     <td>${cotizacion.productos_interes || '-'}</td>
                     <td>${cotizacion.estado}</td>
                     <td>${new Date(cotizacion.fecha).toLocaleString()}</td>
+                    <td>
+                        <button onclick="cambiarEstado(${cotizacion.id}, '${cotizacion.estado === 'pendiente' ? 'atendida' : 'pendiente'}')" style="background:#CC0000; color:#fff; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;">
+                            ${cotizacion.estado === 'pendiente' ? 'Marcar atendida' : 'Reabrir'}
+                        </button>
+                    </td>
                 </tr>
             `).join('');
             document.querySelector('.admin-numero').textContent = data.length;
         })
         .catch(err => console.error('Error:', err));
+        function cambiarEstado(id, estado) {
+        fetch('/api/cotizaciones/' + id, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ estado })
+        }).then(() => location.reload());
+    }
 
     function cargarProductos() {
         fetch('/api/productos')

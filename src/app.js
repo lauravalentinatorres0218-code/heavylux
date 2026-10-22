@@ -170,3 +170,13 @@ app.get('/api/productos/:id', (req, res) => {
         res.json(results[0]);
     });
 });
+app.put('/api/cotizaciones/:id', (req, res) => {
+    const { estado } = req.body;
+    db.query('UPDATE cotizaciones SET estado = ? WHERE id = ?', [estado, req.params.id], (err) => {
+        if (err) {
+            console.error('Error actualizando cotización:', err);
+            return res.status(500).json({ error: 'Error al actualizar' });
+        }
+        res.json({ mensaje: 'Estado actualizado' });
+    });
+});
