@@ -180,3 +180,12 @@ app.put('/api/cotizaciones/:id', (req, res) => {
         res.json({ mensaje: 'Estado actualizado' });
     });
 });
+app.get('/api/usuarios/total', verificarSesion, (req, res) => {
+    db.query('SELECT COUNT(*) AS total FROM usuarios', (err, results) => {
+        if (err) {
+            console.error('Error contando usuarios:', err);
+            return res.status(500).json({ error: 'Error al contar usuarios' });
+        }
+        res.json({ total: results[0].total });
+    });
+});
