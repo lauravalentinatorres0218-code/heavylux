@@ -515,8 +515,12 @@ body{
     font-size: 13px;
     margin-bottom: 25px;
 }
+.login-form .form-group {
+    gap: 8px;
+    margin-bottom: 16px;
+}
 .login-form .form-group label {
-    text-align: left;
+    text-align: center;
 }
 .login-form .btn-submit {
     width: 100%;
