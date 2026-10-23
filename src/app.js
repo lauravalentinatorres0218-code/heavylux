@@ -34,7 +34,13 @@ function verificarSesion(req, res, next) {
         res.redirect('/login');
     }
 }
-
+function soloAdmin(req, res, next) {
+    if (req.session.usuario && req.session.usuario.rol === 'admin') {
+        next();
+    } else {
+        res.redirect('/login');
+    }
+}
 app.use(session({
     secret: process.env.SESSION_SECRET || 'heavylux-secret-2026',    
     resave: false,
@@ -76,10 +82,10 @@ app.post(`/cotizar`, (req, res) => {
         res.redirect('/cotizar?enviado=1');
     });
 });
-app.get(`/admin`, verificarSesion, (req, res) => {
+app.get(`/admin`, soloAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, `../views/admin.html`));
 });
-app.get(`/admin/cotizaciones`, verificarSesion, (req, res) => {
+app.get(`/admin/cotizaciones`, soloAdmin, (req, res) => {
     const sql = `SELECT * FROM cotizaciones ORDER BY id DESC`;
     db.query(sql, (err, results) => {
         if (err) {
@@ -96,19 +102,24 @@ app.get('/login', (req, res) => {
 });
 app.post('/login', (req, res) => {
     const { correo, password } = req.body;
-    const sql = 'SELECT * FROM usuarios WHERE correo = ?';
-    db.query(sql, [correo], async (err, results) => {
-        if (err || results.length === 0) {
+    db.query('SELECT * FROM usuarios WHERE correo = ?', [correo], async (err, results) => {
+        if (!err && results.length > 0) {
+            const u = results[0];
+            if (await bcrypt.compare(password, u.password)) {
+                req.session.usuario = { id: u.id, nombre: u.nombre, correo: u.correo, rol: u.rol };
+                return res.redirect('/admin');
+            }
             return res.redirect('/login?error=1');
         }
-        const usuario = results[0];
-        const match = await bcrypt.compare(password, usuario.password);
-        if (match) {
-        req.session.usuario = { id: usuario.id, nombre: usuario.nombre, correo: usuario.correo, rol: usuario.rol };            
-        res.redirect('/admin');
-        } else {
+        db.query('SELECT * FROM clientes WHERE correo = ?', [correo], async (err2, rc) => {
+            if (err2 || rc.length === 0) return res.redirect('/login?error=1');
+            const c = rc[0];
+            if (await bcrypt.compare(password, c.password)) {
+                req.session.usuario = { id: c.id, nombre: c.nombre, correo: c.correo, rol: 'cliente' };
+                return res.redirect('/carrito');
+            }
             res.redirect('/login?error=1');
-        }
+        });
     });
 });
 
@@ -127,7 +138,7 @@ app.get(`/api/productos`, (req, res) => {
         res.json(results);
     });
 });
-app.post('/api/productos', verificarSesion, (req, res) => {    
+app.post('/api/productos', soloAdmin, (req, res) => {    
     const { nombre, descripcion, precio, stock, categoria, imagen } = req.body;
     const sql = `INSERT INTO productos (nombre, descripcion, precio, stock, categoria, imagen) VALUES (?, ?, ?, ?, ?, ?)`;
     db.query(sql, [nombre, descripcion, precio, stock, categoria, imagen], (err, result) => {
@@ -139,7 +150,7 @@ app.post('/api/productos', verificarSesion, (req, res) => {
         res.json({ mensaje: 'Producto agregado exitosamente', id: result.insertId });
     });
 });
-app.delete('/api/productos/:id', verificarSesion, (req, res) => {    
+app.delete('/api/productos/:id', soloAdmin, (req, res) => {    
     const { id } = req.params;
     const sql = `DELETE FROM productos WHERE id = ?`;
     db.query(sql, [id], (err, result) => {
@@ -163,7 +174,7 @@ app.get('/api/productos/:id', (req, res) => {
         res.json(results[0]);
     });
 });
-app.put('/api/cotizaciones/:id', verificarSesion, (req, res) => {    
+app.put('/api/cotizaciones/:id', soloAdmin, (req, res) => {    
     const { estado } = req.body;
     db.query('UPDATE cotizaciones SET estado = ? WHERE id = ?', [estado, req.params.id], (err) => {
         if (err) {
@@ -173,7 +184,7 @@ app.put('/api/cotizaciones/:id', verificarSesion, (req, res) => {
         res.json({ mensaje: 'Estado actualizado' });
     });
 });
-app.get('/api/usuarios/total', verificarSesion, (req, res) => {
+app.get('/api/usuarios/total', soloAdmin, (req, res) => {
     db.query('SELECT COUNT(*) AS total FROM usuarios', (err, results) => {
         if (err) {
             console.error('Error contando usuarios:', err);
@@ -207,11 +218,12 @@ db.query(`CREATE TABLE IF NOT EXISTS ordenes (
     fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )`, (err) => { if (err) console.error(err); });
 
-app.get('/checkout', (req, res) => {
+app.get('/checkout', verificarSesion, (req, res) => {
     res.sendFile(path.join(__dirname, '../views/checkout.html'));
 });
 
 app.post('/api/pedidos', (req, res) => {
+    if (!req.session.usuario) return res.status(401).json({ error: 'Debes iniciar sesión' });
     const { nombre, telefono, correo, direccion, ciudad, metodo_pago, items } = req.body;
     if (!Array.isArray(items) || items.length === 0) {
         return res.status(400).json({ error: 'Carrito vacío' });
@@ -236,22 +248,22 @@ app.post('/api/pedidos', (req, res) => {
     });
 });
 
-app.get('/admin/pedidos', verificarSesion, (req, res) => {
+app.get('/admin/pedidos', soloAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, '../views/admin-pedidos.html'));
 });
-app.get('/admin/productos', verificarSesion, (req, res) => {
+app.get('/admin/productos', soloAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, '../views/admin-productos.html'));
 });
-app.get('/admin/cotizaciones-lista', verificarSesion, (req, res) => {
+app.get('/admin/cotizaciones-lista', soloAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, '../views/admin-cotizaciones.html'));
 });
-app.get('/api/pedidos', verificarSesion, (req, res) => {
+app.get('/api/pedidos', soloAdmin, (req, res) => {
     db.query('SELECT * FROM ordenes ORDER BY id DESC', (err, results) => {
         if (err) return res.status(500).json({ error: 'Error al obtener pedidos' });
         res.json(results);
     });
 });
-app.put('/api/pedidos/:id', verificarSesion, (req, res) => {
+app.put('/api/pedidos/:id', soloAdmin, (req, res) => {
     const { estado } = req.body;
     const validos = ['pendiente', 'pagado', 'enviado'];
     if (!validos.includes(estado)) {
@@ -262,5 +274,37 @@ app.put('/api/pedidos/:id', verificarSesion, (req, res) => {
         res.json({ mensaje: 'Estado actualizado' });
     });
 });
+db.query(`CREATE TABLE IF NOT EXISTS clientes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    correo VARCHAR(255) NOT NULL UNIQUE,
+    telefono VARCHAR(30),
+    password VARCHAR(255) NOT NULL,
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)`, (err) => { if (err) console.error(err); });
 
+app.get('/registro', (req, res) => {
+    res.sendFile(path.join(__dirname, '../views/registro.html'));
+});
+
+app.post('/registro', (req, res) => {
+    const { nombre, correo, telefono, password } = req.body;
+    if (!nombre || !correo || !password || password.length < 6) {
+        return res.redirect('/registro?error=datos');
+    }
+    db.query('SELECT id FROM clientes WHERE correo = ?', [correo], async (err, r) => {
+        if (err) return res.redirect('/registro?error=1');
+        if (r.length > 0) return res.redirect('/registro?error=existe');
+        const hash = await bcrypt.hash(password, 10);
+        db.query(
+            'INSERT INTO clientes (nombre, correo, telefono, password) VALUES (?,?,?,?)',
+            [nombre, correo, telefono, hash],
+            (err2, result) => {
+                if (err2) return res.redirect('/registro?error=1');
+                req.session.usuario = { id: result.insertId, nombre, correo, rol: 'cliente' };
+                res.redirect('/carrito');
+            }
+        );
+    });
+});
 app.use((req, res) => res.status(404).send('Página no encontrada'));
