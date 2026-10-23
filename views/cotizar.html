@@ -72,6 +72,10 @@
         <p>Acacías, Meta · heavylux@gmail.com</p>
         <p>© 2026 HeavyLux · Todos los derechos reservados</p>
     </footer>
+    <script>
+        const p = new URLSearchParams(window.location.search).get('productos');
+        if (p) document.getElementById('productos').value = p;
+    </script>
 
 </body>
 </html>
