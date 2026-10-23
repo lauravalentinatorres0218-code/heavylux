@@ -502,6 +502,7 @@ body{
     padding: 40px;
     width: 100%;
     max-width: 400px;
+    text-align: center;
 }
 .login-logo {
     font-size: 28px;
@@ -511,12 +512,19 @@ body{
 .login-box h2 {
     font-size: 18px;
     color: #ffffff;
-    margin-bottom: 5px;
+    margin-top: 0;
+    margin-bottom: 8px;
 }
 .login-sub {
     color: #aaaaaa;
     font-size: 13px;
     margin-bottom: 25px;
+}
+.login-form .form-group label {
+    text-align: left;
+}
+.login-form .btn-submit {
+    width: 100%;
 }
 .login-form .form-group input {
         background-color: #111111;
