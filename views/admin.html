@@ -24,11 +24,12 @@
         <span class="logo-lux">LUX</span>
     </div>
 </div>
-    <ul class="nav-links">
-        <li><a href="#cotizaciones">COTIZACIONES</a></li>
-        <li><a href="#pedidos">PEDIDOS</a></li>
-        <li><a href="#productos">PRODUCTOS</a></li>
-    </ul>
+<ul class="nav-links">
+    <li><a href="/admin">INICIO</a></li>
+    <li><a href="/admin/cotizaciones-lista">COTIZACIONES</a></li>
+    <li><a href="/admin/pedidos">PEDIDOS</a></li>
+    <li><a href="/admin/productos">PRODUCTOS</a></li>
+</ul>
     <div class="navbar-actions">
         <a href="/cuenta" class="navbar-icon btn-carrito">👤 CUENTA</a>
     </div>
@@ -41,119 +42,19 @@
             <h3>Cotizaciones</h3>
             <p class="admin-numero">0</p>
             <p class="admin-sub">Total recibidas</p>
-            <a href="#cotizaciones" class="btn-primary">Ver todas</a>
+            <a href="/admin/cotizaciones-lista" class="btn-primary">Ver todas</a>
         </div>
         <div class="admin-card">
             <h3>Productos</h3>
             <p class="admin-numero" id="contador-productos">0</p>
             <p class="admin-sub">En catálogo</p>
-            <a href="#productos" class="btn-primary">Ver todos</a>
+            <a href="/admin/productos" class="btn-primary">Ver todos</a>
         </div>
         <div class="admin-card">
             <h3>Usuarios</h3>
             <p class="admin-numero" id="contador-usuarios">0</p>
             <p class="admin-sub">Registrados</p>
         </div>
-    </div>
-    <div class="admin-seccion" id="cotizaciones">
-        <h2>Cotizaciones recientes</h2>
-        <table class="admin-tabla">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Telefono</th>
-                    <th>Correo</th>
-                    <th>Producto</th>
-                    <th>Estado</th>
-                    <th>Fecha</th>
-                    <th>Acción</th>
-                </tr>
-            </thead>
-            <tbody id="cotizaciones-tbody">
-                <tr>
-                    <td colspan="8">Cargando cotizaciones...</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="admin-seccion" id="productos">
-        <h2>Productos en catálogo</h2>
-        <table class="admin-tabla">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Precio</th>
-                    <th>Categoría</th>
-                    <th>Stock</th>
-                    <th>Acción</th>
-                </tr>
-            </thead>
-            <tbody id="productos-tbody">
-                <tr>
-                    <td colspan="6">Cargando productos...</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-        <div class="admin-seccion" id="pedidos">
-        <h2>Pedidos</h2>
-        <table class="admin-tabla">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Cliente</th>
-                    <th>Teléfono</th>
-                    <th>Ciudad</th>
-                    <th>Productos</th>
-                    <th>Total</th>
-                    <th>Pago</th>
-                    <th>Estado</th>
-                    <th>Acción</th>
-                </tr>
-            </thead>
-            <tbody id="pedidos-tbody">
-                <tr><td colspan="9">Cargando pedidos...</td></tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="admin-seccion">
-        <h2>Agregar producto</h2>
-        <form class="cotizar-form" id="form-producto">
-            <div class="form-group">
-                <label>Nombre</label>
-                <input type="text" id="prod-nombre" placeholder="Nombre del producto" required>
-            </div>
-            <div class="form-group">
-                <label>Descripcion</label>
-                <textarea id="prod-descripcion" placeholder="Descripcion" rows="3"></textarea>
-            </div>
-            <div class="form-group">
-                <label>Precio</label>
-                <input type="number" id="prod-precio" placeholder="Precio en pesos" required>
-            </div>
-            <div class="form-group">
-                <label>Stock</label>
-                <input type="number" id="prod-stock" placeholder="Cantidad disponible" required>
-            </div>
-            <div class="form-group">
-                <label>Categoría</label>
-                <select id="prod-categoria">
-                    <option>Iluminación LED</option>
-                    <option>Repuestos</option>
-                    <option>Lujos y accesorios</option>
-                    <option>Suspensión</option>
-                    <option>Dirección</option>
-                    <option>Transmisión</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Imagen</label>
-                <input type="text" id="prod-imagen" placeholder="nombre-imagen.jpg">
-            </div>
-            <button type="submit" class="btn-submit">Agregar producto</button>
-        </form>
     </div>
 </section>
 <!--FOOTER-->
@@ -162,153 +63,14 @@
     <p>© 2026 HeavyLux · Panel Administrativo</p>
 </footer>
 <script>
-    function esc(t) {
-        return String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    }
-    fetch('/admin/cotizaciones')
-        .then(res => res.json())
-        .then(data => {
-            const tbody = document.getElementById('cotizaciones-tbody');
-            if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8">No hay cotizaciones recientes.</td></tr>';
-                return;
-            }
-            tbody.innerHTML = data.map(cotizacion => `
-                <tr>
-                    <td>${cotizacion.id}</td>
-                    <td>${esc(cotizacion.nombre)}</td>
-                    <td>${esc(cotizacion.telefono)}</td>
-                    <td>${esc(cotizacion.correo)}</td>
-                    <td>${esc(cotizacion.productos_interes || '-')}</td>
-                    <td>${cotizacion.estado}</td>
-                    <td>${new Date(cotizacion.fecha).toLocaleString()}</td>
-                    <td>
-                        <button onclick="cambiarEstado(${cotizacion.id}, '${cotizacion.estado === 'pendiente' ? 'atendida' : 'pendiente'}')" style="background:#CC0000; color:#fff; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;">
-                            ${cotizacion.estado === 'pendiente' ? 'Marcar atendida' : 'Reabrir'}
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-            document.querySelector('.admin-numero').textContent = data.length;
-        })
-        .catch(err => console.error('Error:', err));
-
-        function cambiarEstado(id, estado) {
-        fetch('/api/cotizaciones/' + id, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ estado })
-        }).then(() => location.reload());
-    }
-
-    function cargarProductos() {
-        fetch('/api/productos')
-            .then(res => res.json())
-            .then(data => {
-                const tbody = document.getElementById('productos-tbody');
-                document.getElementById('contador-productos').textContent = data.length;
-                if (data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6">No hay productos.</td></tr>';
-                    return;
-                }
-                tbody.innerHTML = data.map(p => `
-                    <tr>
-                        <td>${p.id}</td>
-                        <td>${esc(p.nombre)}</td>
-                        <td>$${Number(p.precio).toLocaleString('es-CO')}</td>
-                        <td>${esc(p.categoria)}</td>
-                        <td>${p.stock}</td>
-                        <td>
-                            <button onclick="eliminarProducto(${p.id})" style="background:#CC0000; color:#fff; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;">Eliminar</button>
-                        </td>
-                    </tr>
-                `).join('');
-            })
-            .catch(err => console.error('Error:', err));
-    }
-
-    function eliminarProducto(id) {
-        if (confirm('¿Seguro que quieres eliminar este producto?')) {
-            fetch(`/api/productos/${id}`, { method: 'DELETE' })
-                .then(res => res.json())
-                .then(data => {
-                    alert('Producto eliminado');
-                    cargarProductos();
-                })
-                .catch(err => console.error('Error:', err));
-        }
-    }
-
-        fetch('/api/usuarios/total')
-        .then(res => res.json())
-        .then(data => {
-            document.getElementById('contador-usuarios').textContent = data.total;
-        })
-        .catch(err => console.error('Error:', err));
-        function cargarPedidos() {
-        fetch('/api/pedidos')
-            .then(res => res.json())
-            .then(data => {
-                const tbody = document.getElementById('pedidos-tbody');
-                if (data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="9">No hay pedidos.</td></tr>';
-                    return;
-                }
-                tbody.innerHTML = data.map(o => `
-                    <tr>
-                        <td>#${o.id}</td>
-                        <td>${esc(o.nombre)}</td>
-                        <td>${esc(o.telefono)}</td>
-                        <td>${esc(o.ciudad)}</td>
-                        <td>${esc(o.productos)}</td>
-                        <td>$${Number(o.total).toLocaleString('es-CO')}</td>
-                        <td>${o.metodo_pago}</td>
-                        <td>${o.estado}</td>
-                        <td>
-                            <select onchange="cambiarEstadoPedido(${o.id}, this.value)">
-                                <option value="pendiente" ${o.estado === 'pendiente' ? 'selected' : ''}>Pendiente</option>
-                                <option value="pagado" ${o.estado === 'pagado' ? 'selected' : ''}>Pagado</option>
-                                <option value="enviado" ${o.estado === 'enviado' ? 'selected' : ''}>Enviado</option>
-                            </select>
-                        </td>
-                    </tr>
-                `).join('');
-            })
-            .catch(err => console.error('Error:', err));
-    }
-
-    function cambiarEstadoPedido(id, estado) {
-        fetch('/api/pedidos/' + id, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ estado })
-        }).then(() => cargarPedidos());
-    }
-
-    cargarPedidos();
-    cargarProductos();
-
-    document.getElementById('form-producto').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const producto = {
-            nombre: document.getElementById('prod-nombre').value,
-            descripcion: document.getElementById('prod-descripcion').value,
-            precio: document.getElementById('prod-precio').value,
-            stock: document.getElementById('prod-stock').value,
-            categoria: document.getElementById('prod-categoria').value,
-            imagen: document.getElementById('prod-imagen').value
-        };
-        fetch('/api/productos', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(producto)
-        })
-        .then(res => res.json())
-        .then(data => {
-            alert('Producto agregado exitosamente');
-            cargarProductos();
-        })
-        .catch(err => console.error('Error:', err));
+    fetch('/admin/cotizaciones').then(r => r.json()).then(d => {
+        document.querySelector('.admin-numero').textContent = d.length;
+    });
+    fetch('/api/productos').then(r => r.json()).then(d => {
+        document.getElementById('contador-productos').textContent = d.length;
+    });
+    fetch('/api/usuarios/total').then(r => r.json()).then(d => {
+        document.getElementById('contador-usuarios').textContent = d.total;
     });
 </script>
 </body>
