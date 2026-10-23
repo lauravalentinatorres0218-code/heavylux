@@ -228,12 +228,21 @@ app.post('/api/pedidos', (req, res) => {
     if (!Array.isArray(items) || items.length === 0) {
         return res.status(400).json({ error: 'Carrito vacío' });
     }
-    db.query('SELECT id, nombre, precio FROM productos WHERE id IN (?)', [items], (err, productos) => {
+    const ids = items.map(i => Number(i.id));
+    db.query('SELECT id, nombre, precio, stock FROM productos WHERE id IN (?)', [ids], (err, productos) => {
         if (err || productos.length === 0) {
             return res.status(500).json({ error: 'No se pudo crear el pedido' });
         }
-        const total = productos.reduce((s, p) => s + Number(p.precio), 0);
-        const lista = productos.map(p => p.nombre).join(', ');
+        let total = 0;
+        const partes = [];
+        for (const it of items) {
+            const p = productos.find(x => x.id === Number(it.id));
+            if (!p) continue;
+            const cant = Math.max(1, Math.min(Number(it.cantidad) || 1, 99));
+            total += Number(p.precio) * cant;
+            partes.push(p.nombre + ' x' + cant);
+        }
+        const lista = partes.join(', ');
         db.query(
             'INSERT INTO ordenes (nombre, telefono, correo, direccion, ciudad, metodo_pago, productos, total) VALUES (?,?,?,?,?,?,?,?)',
             [nombre, telefono, correo, direccion, ciudad, metodo_pago, lista, total],

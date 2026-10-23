@@ -46,13 +46,23 @@
         function leerCarrito() {
             return JSON.parse(localStorage.getItem('carrito') || '[]');
         }
-        function quitar(id) {
-            const nuevo = leerCarrito().filter(p => p.id !== id);
-            localStorage.setItem('carrito', JSON.stringify(nuevo));
+        function guardar(items) {
+            localStorage.setItem('carrito', JSON.stringify(items));
             mostrar();
         }
+        function quitar(id) {
+            guardar(leerCarrito().filter(p => p.id !== id));
+        }
+        function cambiarCantidad(id, delta) {
+            const items = leerCarrito();
+            const p = items.find(x => x.id === id);
+            if (!p) return;
+            p.cantidad = (p.cantidad || 1) + delta;
+            if (p.cantidad < 1) p.cantidad = 1;
+            guardar(items);
+        }
         function irACotizar() {
-            const lista = leerCarrito().map(p => p.nombre).join(', ');
+            const lista = leerCarrito().map(p => p.nombre + ' x' + (p.cantidad || 1)).join(', ');
             window.location.href = '/cotizar?productos=' + encodeURIComponent(lista);
         }
         function mostrar() {
@@ -62,18 +72,23 @@
                 cont.innerHTML = '<p style="color:#aaaaaa">Tu carrito está vacío. <a href="/catalogo" style="color:#CC0000">Ver catálogo</a></p>';
                 return;
             }
-            const total = items.reduce((s, p) => s + Number(p.precio), 0);
+            const total = items.reduce((s, p) => s + Number(p.precio) * (p.cantidad || 1), 0);
             cont.innerHTML = items.map(p => `
                 <div class="carrito-item">
                     <span>${p.nombre}</span>
-                    <span>$${Number(p.precio).toLocaleString('es-CO')}</span>
+                    <span>
+                        <button onclick="cambiarCantidad(${p.id}, -1)">−</button>
+                        ${p.cantidad || 1}
+                        <button onclick="cambiarCantidad(${p.id}, 1)">+</button>
+                    </span>
+                    <span>$${(Number(p.precio) * (p.cantidad || 1)).toLocaleString('es-CO')}</span>
                     <button onclick="quitar(${p.id})">Quitar</button>
                 </div>
             `).join('') + `
                 <p class="carrito-total">Total: $${total.toLocaleString('es-CO')}</p>
                 <a href="/checkout" class="btn-primary">Finalizar compra</a>
                 <a href="#" class="btn-secondary" onclick="irACotizar(); return false;">Solicitar cotización</a>
-                `;
+            `;
         }
         mostrar();
     </script>

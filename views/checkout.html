@@ -69,10 +69,8 @@
         if (items.length === 0) {
             cont.innerHTML = '<p style="color:#aaaaaa">Tu carrito está vacío. <a href="/catalogo" style="color:#CC0000">Ver catálogo</a></p>';
         } else {
-            const total = items.reduce((s, p) => s + Number(p.precio), 0);
-            document.getElementById('resumen-items').innerHTML = items.map(p =>
-                '<div class="carrito-item"><span>' + p.nombre + '</span><span>$' + Number(p.precio).toLocaleString('es-CO') + '</span></div>'
-            ).join('');
+            const total = items.reduce((s, p) => s + Number(p.precio) * (p.cantidad || 1), 0);            document.getElementById('resumen-items').innerHTML = items.map(p =>
+            '<div class="carrito-item"><span>' + p.nombre + ' x' + (p.cantidad || 1) + '</span><span>$' + (Number(p.precio) * (p.cantidad || 1)).toLocaleString('es-CO') + '</span></div>'            ).join('');
             document.getElementById('resumen-total').textContent = 'Total: $' + total.toLocaleString('es-CO');
 
             document.getElementById('form-checkout').addEventListener('submit', (e) => {
@@ -84,7 +82,7 @@
                     direccion: document.getElementById('c-direccion').value,
                     ciudad: document.getElementById('c-ciudad').value,
                     metodo_pago: document.querySelector('input[name="pago"]:checked').value,
-                    items: items.map(p => p.id)
+                    items: items.map(p => ({ id: p.id, cantidad: p.cantidad || 1 }))
                 };
                 fetch('/api/pedidos', {
                     method: 'POST',

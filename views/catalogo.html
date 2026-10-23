@@ -98,10 +98,13 @@
             const p = todosLosProductos.find(x => x.id === id);
             if (!p) return;
             const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
-            if (!carrito.some(x => x.id === id)) {
-                carrito.push({ id: p.id, nombre: p.nombre, precio: p.precio });
-                localStorage.setItem('carrito', JSON.stringify(carrito));
+            const existente = carrito.find(x => x.id === id);
+            if (existente) {
+                existente.cantidad = (existente.cantidad || 1) + 1;
+            } else {
+                carrito.push({ id: p.id, nombre: p.nombre, precio: p.precio, cantidad: 1 });
             }
+            localStorage.setItem('carrito', JSON.stringify(carrito));
             alert(p.nombre + ' agregado al carrito');
         }
         function mostrarProductos(productos) {
