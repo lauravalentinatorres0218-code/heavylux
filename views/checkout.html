@@ -102,6 +102,12 @@
                 .catch(() => alert('No se pudo enviar el pedido'));
             });
         }
-    </script>
+                fetch('/api/cuenta').then(r => r.json()).then(u => {
+                    const n = document.getElementById('c-nombre');
+                    const c = document.getElementById('c-correo');
+                    if (n) n.value = u.nombre || '';
+                    if (c) c.value = u.correo || '';
+                });
+</script>
 </body>
 </html>

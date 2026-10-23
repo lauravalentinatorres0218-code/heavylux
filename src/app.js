@@ -235,12 +235,17 @@ app.post('/api/pedidos', (req, res) => {
         }
         let total = 0;
         const partes = [];
+        const descuentos = [];
         for (const it of items) {
             const p = productos.find(x => x.id === Number(it.id));
             if (!p) continue;
             const cant = Math.max(1, Math.min(Number(it.cantidad) || 1, 99));
+            if (cant > p.stock) {
+                return res.status(400).json({ error: 'Stock insuficiente para ' + p.nombre });
+            }
             total += Number(p.precio) * cant;
             partes.push(p.nombre + ' x' + cant);
+            descuentos.push([cant, p.id]);
         }
         const lista = partes.join(', ');
         db.query(
@@ -251,6 +256,9 @@ app.post('/api/pedidos', (req, res) => {
                     console.error('Error creando pedido:', err2);
                     return res.status(500).json({ error: 'No se pudo crear el pedido' });
                 }
+                descuentos.forEach(([cant, id]) => {
+                db.query('UPDATE productos SET stock = stock - ? WHERE id = ?', [cant, id]);
+                });
                 res.json({ id: result.insertId, total });
             }
         );
