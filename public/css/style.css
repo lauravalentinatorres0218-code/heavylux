@@ -530,7 +530,7 @@ body{
 .nosotros {
     padding: 60px 40px;
     background-color: #111111;
-    margin-bottom: 60vh;
+    min-height: 60vh;
 }
 .nosotros-header {
     text-align: center;
@@ -572,7 +572,7 @@ body{
     gap: 20px;
     align-content: start;
 }
-.stats-card {
+.stat-card {
     background-color: #1a1a1a;
     border: 1px solid #333333;
     border-radius: 8px;
@@ -622,7 +622,7 @@ body{
 .hero-search button:hover {
     background-color: #aa0000;
 }
-.hero-taga {
+.hero-tags {
     display: flex;
     gap: 10px;
     margin-top: 15px;
