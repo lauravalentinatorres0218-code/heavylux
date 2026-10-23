@@ -86,7 +86,7 @@ app.post(`/cotizar`, (req, res) => {
 app.get(`/admin`, verificarSesion, (req, res) => {
     res.sendFile(path.join(__dirname, `../views/admin.html`));
 });
-app.get(`/admin/cotizaciones`, (req, res) => {
+app.get(`/admin/cotizaciones`, verificarSesion, (req, res) => {
     const sql = `SELECT * FROM cotizaciones ORDER BY id DESC`;
     db.query(sql, (err, results) => {
         if (err) {
@@ -134,7 +134,7 @@ app.get(`/api/productos`, (req, res) => {
         res.json(results);
     });
 });
-app.post('/api/productos', (req, res) => {
+app.post('/api/productos', verificarSesion, (req, res) => {    
     const { nombre, descripcion, precio, stock, categoria, imagen } = req.body;
     const sql = `INSERT INTO productos (nombre, descripcion, precio, stock, categoria, imagen) VALUES (?, ?, ?, ?, ?, ?)`;
     db.query(sql, [nombre, descripcion, precio, stock, categoria, imagen], (err, result) => {
@@ -146,7 +146,7 @@ app.post('/api/productos', (req, res) => {
         res.json({ mensaje: 'Producto agregado exitosamente', id: result.insertId });
     });
 });
-app.delete('/api/productos/:id', (req, res) => {
+app.delete('/api/productos/:id', verificarSesion, (req, res) => {    
     const { id } = req.params;
     const sql = `DELETE FROM productos WHERE id = ?`;
     db.query(sql, [id], (err, result) => {
@@ -170,7 +170,7 @@ app.get('/api/productos/:id', (req, res) => {
         res.json(results[0]);
     });
 });
-app.put('/api/cotizaciones/:id', (req, res) => {
+app.put('/api/cotizaciones/:id', verificarSesion, (req, res) => {    
     const { estado } = req.body;
     db.query('UPDATE cotizaciones SET estado = ? WHERE id = ?', [estado, req.params.id], (err) => {
         if (err) {
