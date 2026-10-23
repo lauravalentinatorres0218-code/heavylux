@@ -260,3 +260,5 @@ app.put('/api/pedidos/:id', verificarSesion, (req, res) => {
         res.json({ mensaje: 'Estado actualizado' });
     });
 });
+
+app.use((req, res) => res.status(404).send('Página no encontrada'));
