@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="es"><head>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -43,19 +42,18 @@
             <h3>Cotizaciones</h3>
             <p class="admin-numero">0</p>
             <p class="admin-sub">Total recibidas</p>
-            <a href="/admin/cotizaciones" class="btn-primary">Ver todas</a>
+            <a href="#cotizaciones" class="btn-primary">Ver todas</a>
         </div>
         <div class="admin-card">
             <h3>Productos</h3>
             <p class="admin-numero" id="contador-productos">0</p>
             <p class="admin-sub">En catálogo</p>
-            <a href="/admin/productos" class="btn-primary">Ver todos</a>
+            <a href="#productos" class="btn-primary">Ver todos</a>
         </div>
         <div class="admin-card">
             <h3>Usuarios</h3>
             <p class="admin-numero" id="contador-usuarios">0</p>
             <p class="admin-sub">Registrados</p>
-            <a href="#" class="btn-primary">Ver todos</a>
         </div>
     </div>
     <div class="admin-seccion" id="cotizaciones">
@@ -164,12 +162,10 @@
     <p><span class="logo-heavy">HEAVY</span><span class="logo-LUX">LUX</span></p>
     <p>© 2026 HeavyLux · Panel Administrativo</p>
 </footer>
-    <a href="https://wa.me/573137349236?text=Hola%20HeavyLux%2C%20quiero%20informaci%C3%B3n" class="whatsapp-flotante" target="_blank" title="Escríbenos por WhatsApp">
-        <svg viewBox="0 0 32 32" width="32" height="32" fill="#ffffff" xmlns="http://www.w3.org/2000/svg">
-            <path d="M16.003 3C8.83 3 3 8.83 3 16c0 2.29.6 4.52 1.74 6.49L3 29l6.68-1.72A12.94 12.94 0 0 0 16.003 29C23.17 29 29 23.17 29 16S23.17 3 16.003 3zm0 23.7c-1.95 0-3.86-.53-5.53-1.52l-.4-.24-3.96 1.02 1.06-3.86-.26-.4A10.64 10.64 0 0 1 5.3 16c0-5.9 4.8-10.7 10.7-10.7S26.7 10.1 26.7 16s-4.8 10.7-10.7 10.7z"/>
-        </svg>
-    </a>
 <script>
+    function esc(t) {
+        return String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
     fetch('/admin/cotizaciones')
         .then(res => res.json())
         .then(data => {
@@ -181,10 +177,10 @@
             tbody.innerHTML = data.map(cotizacion => `
                 <tr>
                     <td>${cotizacion.id}</td>
-                    <td>${cotizacion.nombre}</td>
-                    <td>${cotizacion.telefono}</td>
-                    <td>${cotizacion.correo}</td>
-                    <td>${cotizacion.productos_interes || '-'}</td>
+                    <td>${esc(cotizacion.nombre)}</td>
+                    <td>${esc(cotizacion.telefono)}</td>
+                    <td>${esc(cotizacion.correo)}</td>
+                    <td>${esc(cotizacion.productos_interes || '-')}</td>
                     <td>${cotizacion.estado}</td>
                     <td>${new Date(cotizacion.fecha).toLocaleString()}</td>
                     <td>
@@ -219,9 +215,9 @@
                 tbody.innerHTML = data.map(p => `
                     <tr>
                         <td>${p.id}</td>
-                        <td>${p.nombre}</td>
+                        <td>${esc(p.nombre)}</td>
                         <td>$${Number(p.precio).toLocaleString('es-CO')}</td>
-                        <td>${p.categoria}</td>
+                        <td>${esc(p.categoria)}</td>
                         <td>${p.stock}</td>
                         <td>
                             <button onclick="eliminarProducto(${p.id})" style="background:#CC0000; color:#fff; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;">Eliminar</button>
@@ -262,10 +258,10 @@
                 tbody.innerHTML = data.map(o => `
                     <tr>
                         <td>#${o.id}</td>
-                        <td>${o.nombre}</td>
-                        <td>${o.telefono}</td>
-                        <td>${o.ciudad}</td>
-                        <td>${o.productos}</td>
+                        <td>${esc(o.nombre)}</td>
+                        <td>${esc(o.telefono)}</td>
+                        <td>${esc(o.ciudad)}</td>
+                        <td>${esc(o.productos)}</td>
                         <td>$${Number(o.total).toLocaleString('es-CO')}</td>
                         <td>${o.metodo_pago}</td>
                         <td>${o.estado}</td>
@@ -316,5 +312,5 @@
         .catch(err => console.error('Error:', err));
     });
 </script>
-<a href="https://wa.me/573137349236?text=Hola%20HeavyLux%2C%20quiero%20informaci%C3%B3n" class="whatsapp-flotante" target="_blank" title="Escr%C3%ADbenos por WhatsApp">💬</a>
+</body>
 </html>
