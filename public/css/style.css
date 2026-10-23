@@ -786,3 +786,7 @@ body{
     font-weight: 700;
     margin: 25px 0;
 }
+a.categoria-card {
+    display: block;
+    text-decoration: none;
+}
