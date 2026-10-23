@@ -100,6 +100,27 @@
             </tbody>
         </table>
     </div>
+        <div class="admin-seccion">
+        <h2>Pedidos</h2>
+        <table class="admin-tabla">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Teléfono</th>
+                    <th>Ciudad</th>
+                    <th>Productos</th>
+                    <th>Total</th>
+                    <th>Pago</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody id="pedidos-tbody">
+                <tr><td colspan="9">Cargando pedidos...</td></tr>
+            </tbody>
+        </table>
+    </div>
     <div class="admin-seccion">
         <h2>Agregar producto</h2>
         <form class="cotizar-form" id="form-producto">
@@ -224,7 +245,47 @@
             document.getElementById('contador-usuarios').textContent = data.total;
         })
         .catch(err => console.error('Error:', err));
+        function cargarPedidos() {
+        fetch('/api/pedidos')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.getElementById('pedidos-tbody');
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9">No hay pedidos.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = data.map(o => `
+                    <tr>
+                        <td>#${o.id}</td>
+                        <td>${o.nombre}</td>
+                        <td>${o.telefono}</td>
+                        <td>${o.ciudad}</td>
+                        <td>${o.productos}</td>
+                        <td>$${Number(o.total).toLocaleString('es-CO')}</td>
+                        <td>${o.metodo_pago}</td>
+                        <td>${o.estado}</td>
+                        <td>
+                            <select onchange="cambiarEstadoPedido(${o.id}, this.value)">
+                                <option value="pendiente" ${o.estado === 'pendiente' ? 'selected' : ''}>Pendiente</option>
+                                <option value="pagado" ${o.estado === 'pagado' ? 'selected' : ''}>Pagado</option>
+                                <option value="enviado" ${o.estado === 'enviado' ? 'selected' : ''}>Enviado</option>
+                            </select>
+                        </td>
+                    </tr>
+                `).join('');
+            })
+            .catch(err => console.error('Error:', err));
+    }
 
+    function cambiarEstadoPedido(id, estado) {
+        fetch('/api/pedidos/' + id, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ estado })
+        }).then(() => cargarPedidos());
+    }
+
+    cargarPedidos();
     cargarProductos();
 
     document.getElementById('form-producto').addEventListener('submit', (e) => {

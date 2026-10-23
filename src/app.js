@@ -249,3 +249,14 @@ app.get('/api/pedidos', verificarSesion, (req, res) => {
         res.json(results);
     });
 });
+app.put('/api/pedidos/:id', verificarSesion, (req, res) => {
+    const { estado } = req.body;
+    const validos = ['pendiente', 'pagado', 'enviado'];
+    if (!validos.includes(estado)) {
+        return res.status(400).json({ error: 'Estado no válido' });
+    }
+    db.query('UPDATE ordenes SET estado = ? WHERE id = ?', [estado, req.params.id], (err) => {
+        if (err) return res.status(500).json({ error: 'Error al actualizar' });
+        res.json({ mensaje: 'Estado actualizado' });
+    });
+});
