@@ -43,7 +43,7 @@ function verificarSesion(req, res, next) {
 }
 
 app.use(session({
-    secret: 'heavylux-secret-2026',
+    secret: process.env.SESSION_SECRET || 'heavylux-secret-2026',    
     resave: false,
     saveUninitialized: false,
     cookie: { secure: false }
