@@ -867,6 +867,8 @@ a.categoria-card {
     .admin-cards { grid-template-columns: 1fr; }
     .admin-seccion { overflow-x: auto; }
     .hero, .catalogo, .cotizar, .carrito, .checkout, .detalle { padding-left: 20px; padding-right: 20px; }
+    .navbar { flex-wrap: wrap !important; }
+    body { overflow-x: hidden; }
 }
 
 /* Celular */
