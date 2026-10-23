@@ -520,7 +520,7 @@ body{
     margin-bottom: 16px;
 }
 .login-form .form-group label {
-    text-align: center;
+    text-align: left;
 }
 .login-form .btn-submit {
     width: 100%;
