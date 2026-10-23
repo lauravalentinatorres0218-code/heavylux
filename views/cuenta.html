@@ -42,10 +42,19 @@
             <a href="/admin" class="btn-primary">Ir al panel</a>
         </div>
     </section>
-    </script>
     <footer class="footer">
         <p><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></p>
         <p>© 2026 HeavyLux · Todos los derechos reservados</p>
     </footer>
+    <script>
+        fetch('/api/cuenta')
+            .then(res => res.json())
+            .then(u => {
+                document.getElementById('cuenta-nombre').textContent = u.nombre;
+                document.getElementById('cuenta-correo').textContent = u.correo;
+                document.getElementById('cuenta-rol').textContent = u.rol;
+            })
+            .catch(err => console.error('Error:', err));
+    </script>
 </body>
 </html>
