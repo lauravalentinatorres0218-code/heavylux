@@ -857,25 +857,50 @@ a.categoria-card {
     margin-top: 15px;
 }
 /* Tablet y pantallas medianas */
+@media (max-width: 1100px) {
+    .navbar { padding: 12px 20px; }
+    .nav-links { gap: 16px; }
+    .nav-links a { font-size: 12px; }
+    .navbar-icon { font-size: 12px; }
+}
+
 @media (max-width: 900px) {
-    .navbar { flex-wrap: wrap; gap: 12px; padding: 12px 20px; }
-    .nav-links { flex-wrap: wrap; gap: 14px; }
-    .productos-grid { grid-template-columns: repeat(2, 1fr); }
-    .categorias-grid { grid-template-columns: repeat(2, 1fr); }
+    .navbar {
+        flex-wrap: wrap !important;
+        justify-content: center;
+        gap: 12px;
+        padding: 12px 20px;
+    }
+    .nav-links {
+        width: 100%;
+        order: 3;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+    .navbar-actions {
+        order: 2;
+    }
+    .logo {
+        order: 1;
+    }
+    .productos-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .categorias-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .stats-bar { grid-template-columns: repeat(2, 1fr); }
     .nosotros-grid, .contacto-grid, .detalle-grid, .checkout-grid { grid-template-columns: 1fr; }
     .admin-cards { grid-template-columns: 1fr; }
     .admin-seccion { overflow-x: auto; }
     .hero, .catalogo, .cotizar, .carrito, .checkout, .detalle { padding-left: 20px; padding-right: 20px; }
-    .navbar { flex-wrap: wrap !important; }
     body { overflow-x: hidden; }
 }
 
 /* Celular */
 @media (max-width: 500px) {
-    .productos-grid { grid-template-columns: 1fr; }
+    .productos-grid { grid-template-columns: minmax(0, 1fr); }
     .hero h1 { font-size: 30px; }
     .hero-search { flex-direction: column; }
     .hero-search input, .hero-search button { border-radius: 6px; }
     .top-bar p { font-size: 10px; letter-spacing: 1px; }
+    .nav-links { gap: 10px; }
+    .nav-links a { font-size: 12px; }
 }
