@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar compra - HeavyLux</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="top-bar">
+        <p>ENVIOS A TODO EL META · WHATSAPP +57 313 734 9236 · LUN-SÁB 8AM-6PM</p>
+    </div>
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-bars">
+                <div class="logo-bar"></div>
+                <div class="logo-bar"></div>
+            </div>
+            <div class="logo-text">
+                <span class="logo-heavy">HEAVY</span>
+                <span class="logo-lux">LUX</span>
+            </div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/">INICIO</a></li>
+            <li><a href="/catalogo">CATÁLOGO</a></li>
+            <li><a href="/cotizar">COTIZAR</a></li>
+            <li><a href="/nosotros">NOSOTROS</a></li>
+            <li><a href="/contacto">CONTACTO</a></li>
+        </ul>
+        <div class="navbar-actions">
+            <a href="/cuenta" class="navbar-icon">👤 CUENTA</a>
+            <a href="/carrito" class="navbar-icon btn-carrito">🛒 CARRITO</a>
+        </div>
+    </nav>
+
+    <section class="checkout">
+        <h1>Finalizar compra</h1>
+        <div class="checkout-grid" id="checkout-contenido">
+            <form id="form-checkout" class="checkout-form">
+                <h2>Tus datos</h2>
+                <input type="text" id="c-nombre" placeholder="Nombre completo" required>
+                <input type="tel" id="c-telefono" placeholder="Teléfono" required>
+                <input type="email" id="c-correo" placeholder="Correo electrónico" required>
+                <input type="text" id="c-direccion" placeholder="Dirección de entrega" required>
+                <input type="text" id="c-ciudad" placeholder="Ciudad o municipio" required>
+                <h2>Método de pago</h2>
+                <label class="pago-opcion"><input type="radio" name="pago" value="Contraentrega" checked> Pago contra entrega</label>
+                <label class="pago-opcion"><input type="radio" name="pago" value="Transferencia"> Transferencia bancaria</label>
+                <label class="pago-opcion"><input type="radio" name="pago" value="Nequi"> Nequi / Daviplata</label>
+                <button type="submit" class="btn-submit">Confirmar pedido</button>
+            </form>
+            <div class="checkout-resumen">
+                <h2>Resumen</h2>
+                <div id="resumen-items"></div>
+                <p class="carrito-total" id="resumen-total"></p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></p>
+        <p>© 2026 HeavyLux · Todos los derechos reservados</p>
+    </footer>
+
+    <script>
+        const items = JSON.parse(localStorage.getItem('carrito') || '[]');
+        const cont = document.getElementById('checkout-contenido');
+
+        if (items.length === 0) {
+            cont.innerHTML = '<p style="color:#aaaaaa">Tu carrito está vacío. <a href="/catalogo" style="color:#CC0000">Ver catálogo</a></p>';
+        } else {
+            const total = items.reduce((s, p) => s + Number(p.precio), 0);
+            document.getElementById('resumen-items').innerHTML = items.map(p =>
+                '<div class="carrito-item"><span>' + p.nombre + '</span><span>$' + Number(p.precio).toLocaleString('es-CO') + '</span></div>'
+            ).join('');
+            document.getElementById('resumen-total').textContent = 'Total: $' + total.toLocaleString('es-CO');
+
+            document.getElementById('form-checkout').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const pedido = {
+                    nombre: document.getElementById('c-nombre').value,
+                    telefono: document.getElementById('c-telefono').value,
+                    correo: document.getElementById('c-correo').value,
+                    direccion: document.getElementById('c-direccion').value,
+                    ciudad: document.getElementById('c-ciudad').value,
+                    metodo_pago: document.querySelector('input[name="pago"]:checked').value,
+                    items: items.map(p => p.id)
+                };
+                fetch('/api/pedidos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(pedido)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) { alert(data.error); return; }
+                    localStorage.removeItem('carrito');
+                    cont.innerHTML = '<div class="checkout-ok"><h2>¡Pedido recibido!</h2>' +
+                        '<p>Tu número de pedido es <strong>#' + data.id + '</strong>.</p>' +
+                        '<p>Total: $' + Number(data.total).toLocaleString('es-CO') + '</p>' +
+                        '<p>Te contactaremos pronto para confirmar el pago y el envío.</p>' +
+                        '<a href="/catalogo" class="btn-primary">Seguir comprando</a></div>';
+                })
+                .catch(() => alert('No se pudo enviar el pedido'));
+            });
+        }
+    </script>
+</body>
+</html>

@@ -200,3 +200,52 @@ app.get('/api/cuenta', verificarSesion, (req, res) => {
 app.get('/carrito', (req, res) => {
     res.sendFile(path.join(__dirname, '../views/carrito.html'));
 });
+db.query(`CREATE TABLE IF NOT EXISTS ordenes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255),
+    telefono VARCHAR(30),
+    correo VARCHAR(255),
+    direccion VARCHAR(255),
+    ciudad VARCHAR(100),
+    metodo_pago VARCHAR(50),
+    productos TEXT,
+    total DECIMAL(12,2),
+    estado VARCHAR(50) DEFAULT 'pendiente',
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)`, (err) => { if (err) console.error(err); });
+
+app.get('/checkout', (req, res) => {
+    res.sendFile(path.join(__dirname, '../views/checkout.html'));
+});
+
+app.post('/api/pedidos', (req, res) => {
+    const { nombre, telefono, correo, direccion, ciudad, metodo_pago, items } = req.body;
+    if (!Array.isArray(items) || items.length === 0) {
+        return res.status(400).json({ error: 'Carrito vacío' });
+    }
+    db.query('SELECT id, nombre, precio FROM productos WHERE id IN (?)', [items], (err, productos) => {
+        if (err || productos.length === 0) {
+            return res.status(500).json({ error: 'No se pudo crear el pedido' });
+        }
+        const total = productos.reduce((s, p) => s + Number(p.precio), 0);
+        const lista = productos.map(p => p.nombre).join(', ');
+        db.query(
+            'INSERT INTO ordenes (nombre, telefono, correo, direccion, ciudad, metodo_pago, productos, total) VALUES (?,?,?,?,?,?,?,?)',
+            [nombre, telefono, correo, direccion, ciudad, metodo_pago, lista, total],
+            (err2, result) => {
+                if (err2) {
+                    console.error('Error creando pedido:', err2);
+                    return res.status(500).json({ error: 'No se pudo crear el pedido' });
+                }
+                res.json({ id: result.insertId, total });
+            }
+        );
+    });
+});
+
+app.get('/api/pedidos', verificarSesion, (req, res) => {
+    db.query('SELECT * FROM ordenes ORDER BY id DESC', (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error al obtener pedidos' });
+        res.json(results);
+    });
+});

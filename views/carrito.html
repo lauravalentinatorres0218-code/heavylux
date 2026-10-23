@@ -70,7 +70,8 @@
                 </div>
             `).join('') + `
                 <p class="carrito-total">Total: $${total.toLocaleString('es-CO')}</p>
-                <a href="#" class="btn-primary" onclick="irACotizar(); return false;">Solicitar cotización</a>            
+                <a href="/checkout" class="btn-primary">Finalizar compra</a>
+                <a href="#" class="btn-secondary" onclick="irACotizar(); return false;">Solicitar cotización</a>
                 `;
         }
         mostrar();
