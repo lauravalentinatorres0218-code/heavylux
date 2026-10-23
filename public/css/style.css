@@ -504,11 +504,6 @@ body{
     max-width: 400px;
     text-align: center;
 }
-.login-logo {
-    font-size: 28px;
-    font-weight:900;
-    margin-bottom: 10px;
-}
 .login-box h2 {
     font-size: 18px;
     color: #ffffff;
