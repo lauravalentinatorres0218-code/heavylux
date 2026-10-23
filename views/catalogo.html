@@ -93,13 +93,15 @@
         .catch(err => {
             document.getElementById('productos-grid').innerHTML = '<p style="color:#ff0000">Error al cargar productos.</p>';
         })
-                function agregarAlCarrito(id, nombre, precio) {
+        function agregarAlCarrito(id) {
+            const p = todosLosProductos.find(x => x.id === id);
+            if (!p) return;
             const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
-            if (!carrito.some(p => p.id === id)) {
-                carrito.push({ id, nombre, precio });
+            if (!carrito.some(x => x.id === id)) {
+                carrito.push({ id: p.id, nombre: p.nombre, precio: p.precio });
                 localStorage.setItem('carrito', JSON.stringify(carrito));
             }
-            alert(nombre + ' agregado al carrito');
+            alert(p.nombre + ' agregado al carrito');
         }
         function mostrarProductos(productos) {
             const grid = document.getElementById('productos-grid');
@@ -117,8 +119,9 @@
                         <h3>${p.nombre}</h3>
                         <p class="producto-precio">$${Number(p.precio).toLocaleString('es-CO')}</p>
                         <div class="producto-botones">
-                        <a href="/producto/${p.id}" class="btn-primary">Ver detalle</a>                            
-                        <a href="#" class="btn-secondary" onclick="agregarAlCarrito(${p.id}, '${p.nombre.replace(/'/g, "\\'")}', ${p.precio}); return false;">+ Carrito</a>                        </div>
+                        <a href="/producto/${p.id}" class="btn-primary">Ver detalle</a>
+                        <a href="#" class="btn-secondary" onclick="agregarAlCarrito(${p.id}); return false;">+ Carrito</a>
+                        </div>
                     </div>
                 </div>
             `).join('');
@@ -128,7 +131,7 @@
         const filtrados = todosLosProductos.filter(p =>
             p.nombre.toLowerCase().includes(busqueda) ||
             p.categoria.toLowerCase().includes(busqueda) ||
-            p.descripcion.toLowerCase().includes(busqueda)
+            (p.descripcion || '').toLowerCase().includes(busqueda)        
         );
         mostrarProductos(filtrados);
         });
