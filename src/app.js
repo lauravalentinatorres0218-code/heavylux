@@ -111,8 +111,8 @@ app.post('/login', (req, res) => {
         const usuario = results[0];
         const match = await bcrypt.compare(password, usuario.password);
         if (match) {
-            req.session.usuario = usuario;
-            res.redirect('/admin');
+        req.session.usuario = { id: usuario.id, nombre: usuario.nombre, correo: usuario.correo, rol: usuario.rol };            
+        res.redirect('/admin');
         } else {
             res.redirect('/login?error=1');
         }
