@@ -492,7 +492,7 @@ body{
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #0a0a0a0a
+    background-color: #0a0a0a
 }
 .login-box {
     background-color: #1a1a1a;
@@ -500,7 +500,7 @@ body{
     border-radius: 10px;
     padding: 40px;
     width: 100%;
-    max-width: center;
+    max-width: 400px;
 }
 .login-logo {
     font-size: 28px;
