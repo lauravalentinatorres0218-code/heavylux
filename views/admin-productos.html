@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos - HeavyLux Admin</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="top-bar"><p>PANEL ADMINISTRATIVO · HEAVYLUX</p></div>
+<nav class="navbar">
+    <div class="logo">
+        <div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div></div>
+        <div class="logo-text">
+            <span class="logo-heavy">HEAVY</span>
+            <span class="logo-lux">LUX</span>
+        </div>
+    </div>
+    <ul class="nav-links">
+        <li><a href="/admin">INICIO</a></li>
+        <li><a href="/admin/cotizaciones-lista">COTIZACIONES</a></li>
+        <li><a href="/admin/pedidos">PEDIDOS</a></li>
+        <li><a href="/admin/productos">PRODUCTOS</a></li>
+    </ul>
+    <div class="navbar-actions">
+        <a href="/cuenta" class="navbar-icon btn-carrito">👤 CUENTA</a>
+    </div>
+</nav>
+<section class="admin-dashboard">
+    <h1>PRODUCTOS</h1>
+    <div class="admin-seccion">
+        <table class="admin-tabla">
+            <thead>
+                <tr>
+                    <th>ID</th><th>Nombre</th><th>Precio</th><th>Categoría</th><th>Stock</th><th>Acción</th>
+                </tr>
+            </thead>
+            <tbody id="productos-tbody">
+                <tr><td colspan="6">Cargando productos...</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="admin-seccion">
+        <h2>Agregar producto</h2>
+        <form class="cotizar-form" id="form-producto">
+            <div class="form-group">
+                <label>Nombre</label>
+                <input type="text" id="prod-nombre" placeholder="Nombre del producto" required>
+            </div>
+            <div class="form-group">
+                <label>Descripcion</label>
+                <textarea id="prod-descripcion" placeholder="Descripcion" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Precio</label>
+                <input type="number" id="prod-precio" placeholder="Precio en pesos" required>
+            </div>
+            <div class="form-group">
+                <label>Stock</label>
+                <input type="number" id="prod-stock" placeholder="Cantidad disponible" required>
+            </div>
+            <div class="form-group">
+                <label>Categoría</label>
+                <select id="prod-categoria">
+                    <option>Iluminación LED</option>
+                    <option>Repuestos</option>
+                    <option>Lujos y accesorios</option>
+                    <option>Suspensión</option>
+                    <option>Dirección</option>
+                    <option>Transmisión</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Imagen</label>
+                <input type="text" id="prod-imagen" placeholder="nombre-imagen.jpg">
+            </div>
+            <button type="submit" class="btn-submit">Agregar producto</button>
+        </form>
+    </div>
+</section>
+<footer class="footer">
+    <p><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></p>
+    <p>© 2026 HeavyLux · Panel Administrativo</p>
+</footer>
+<script>
+    function esc(t) {
+        return String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+    function cargarProductos() {
+        fetch('/api/productos')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.getElementById('productos-tbody');
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6">No hay productos.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = data.map(p => `
+                    <tr>
+                        <td>${p.id}</td>
+                        <td>${esc(p.nombre)}</td>
+                        <td>$${Number(p.precio).toLocaleString('es-CO')}</td>
+                        <td>${esc(p.categoria)}</td>
+                        <td>${p.stock}</td>
+                        <td>
+                            <button onclick="eliminarProducto(${p.id})" style="background:#CC0000; color:#fff; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;">Eliminar</button>
+                        </td>
+                    </tr>
+                `).join('');
+            })
+            .catch(err => console.error('Error:', err));
+    }
+    function eliminarProducto(id) {
+        if (confirm('¿Seguro que quieres eliminar este producto?')) {
+            fetch('/api/productos/' + id, { method: 'DELETE' })
+                .then(res => res.json())
+                .then(() => cargarProductos())
+                .catch(err => console.error('Error:', err));
+        }
+    }
+    document.getElementById('form-producto').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const producto = {
+            nombre: document.getElementById('prod-nombre').value,
+            descripcion: document.getElementById('prod-descripcion').value,
+            precio: document.getElementById('prod-precio').value,
+            stock: document.getElementById('prod-stock').value,
+            categoria: document.getElementById('prod-categoria').value,
+            imagen: document.getElementById('prod-imagen').value
+        };
+        fetch('/api/productos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(producto)
+        })
+        .then(res => res.json())
+        .then(() => {
+            alert('Producto agregado exitosamente');
+            e.target.reset();
+            cargarProductos();
+        })
+        .catch(err => console.error('Error:', err));
+    });
+    cargarProductos();
+</script>
+</body>
+</html>

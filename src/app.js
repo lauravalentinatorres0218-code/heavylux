@@ -236,6 +236,15 @@ app.post('/api/pedidos', (req, res) => {
     });
 });
 
+app.get('/admin/pedidos', verificarSesion, (req, res) => {
+    res.sendFile(path.join(__dirname, '../views/admin-pedidos.html'));
+});
+app.get('/admin/productos', verificarSesion, (req, res) => {
+    res.sendFile(path.join(__dirname, '../views/admin-productos.html'));
+});
+app.get('/admin/cotizaciones-lista', verificarSesion, (req, res) => {
+    res.sendFile(path.join(__dirname, '../views/admin-cotizaciones.html'));
+});
 app.get('/api/pedidos', verificarSesion, (req, res) => {
     db.query('SELECT * FROM ordenes ORDER BY id DESC', (err, results) => {
         if (err) return res.status(500).json({ error: 'Error al obtener pedidos' });

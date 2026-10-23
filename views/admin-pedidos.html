@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos - HeavyLux Admin</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="top-bar"><p>PANEL ADMINISTRATIVO · HEAVYLUX</p></div>
+<nav class="navbar">
+    <div class="logo">
+        <div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div></div>
+        <div class="logo-text">
+            <span class="logo-heavy">HEAVY</span>
+            <span class="logo-lux">LUX</span>
+        </div>
+    </div>
+    <ul class="nav-links">
+        <li><a href="/admin">INICIO</a></li>
+        <li><a href="/admin/cotizaciones-lista">COTIZACIONES</a></li>
+        <li><a href="/admin/pedidos">PEDIDOS</a></li>
+        <li><a href="/admin/productos">PRODUCTOS</a></li>
+    </ul>
+    <div class="navbar-actions">
+        <a href="/cuenta" class="navbar-icon btn-carrito">👤 CUENTA</a>
+    </div>
+</nav>
+<section class="admin-dashboard">
+    <h1>PEDIDOS</h1>
+    <div class="admin-seccion">
+        <table class="admin-tabla">
+            <thead>
+                <tr>
+                    <th>ID</th><th>Cliente</th><th>Teléfono</th><th>Ciudad</th>
+                    <th>Productos</th><th>Total</th><th>Pago</th><th>Estado</th><th>Acción</th>
+                </tr>
+            </thead>
+            <tbody id="pedidos-tbody">
+                <tr><td colspan="9">Cargando pedidos...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+<footer class="footer">
+    <p><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></p>
+    <p>© 2026 HeavyLux · Panel Administrativo</p>
+</footer>
+<script>
+    function esc(t) {
+        return String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+    function cargarPedidos() {
+        fetch('/api/pedidos')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.getElementById('pedidos-tbody');
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9">No hay pedidos.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = data.map(o => `
+                    <tr>
+                        <td>#${o.id}</td>
+                        <td>${esc(o.nombre)}</td>
+                        <td>${esc(o.telefono)}</td>
+                        <td>${esc(o.ciudad)}</td>
+                        <td>${esc(o.productos)}</td>
+                        <td>$${Number(o.total).toLocaleString('es-CO')}</td>
+                        <td>${esc(o.metodo_pago)}</td>
+                        <td>${esc(o.estado)}</td>
+                        <td>
+                            <select onchange="cambiarEstadoPedido(${o.id}, this.value)">
+                                <option value="pendiente" ${o.estado === 'pendiente' ? 'selected' : ''}>Pendiente</option>
+                                <option value="pagado" ${o.estado === 'pagado' ? 'selected' : ''}>Pagado</option>
+                                <option value="enviado" ${o.estado === 'enviado' ? 'selected' : ''}>Enviado</option>
+                            </select>
+                        </td>
+                    </tr>
+                `).join('');
+            })
+            .catch(err => console.error('Error:', err));
+    }
+    function cambiarEstadoPedido(id, estado) {
+        fetch('/api/pedidos/' + id, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ estado })
+        }).then(() => cargarPedidos());
+    }
+    cargarPedidos();
+</script>
+</body>
+</html>
