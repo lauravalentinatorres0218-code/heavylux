@@ -39,7 +39,7 @@
         <section class="catalogo">
             <div class="catalogo-header">
                 <h1>Catálogo de productos</h1>
-                <p>Encuentra los repuestos y accesorios para tu vehiculo</p>
+                <p>Encuentra los repuestos y accesorios para tu vehículo</p>
             </div>
             <div class="catalogo-busqueda">
                 <input type="text" id="buscar-producto" placeholder="🔍 Buscar...">
@@ -112,8 +112,8 @@
             grid.innerHTML = productos.map(p => `
                 <div class="producto-card">
                     <div class="producto-imagen">
-                        <img src="/images/${p.imagen}" alt="${p.nombre}">
-                </div>
+                        <img src="/images/${p.imagen}" alt="${p.nombre}" onerror="this.style.display='none'">                
+                    </div>
                     <div class="producto-info">
                         <span class="producto-categoria">${p.categoria}</span>
                         <h3>${p.nombre}</h3>
