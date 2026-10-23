@@ -856,6 +856,8 @@ a.categoria-card {
     display: inline-block;
     margin-top: 15px;
 }
+html { scroll-behavior: smooth; }
+
 /* Tablet y pantallas medianas */
 @media (max-width: 1100px) {
     .navbar { padding: 12px 16px; }
