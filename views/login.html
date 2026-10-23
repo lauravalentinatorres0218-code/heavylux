@@ -9,17 +9,16 @@
 <body>
     <div class="login-container">
         <div class="login-box">
-<nav class="navbar">
-    <div class="logo">
-        <div class="logo-bars">
-            <div class="logo-bar"></div>
-            <div class="logo-bar"></div>
-        </div>
-        <div class="logo-text">
-            <span class="logo-heavy">HEAVY</span>
-            <span class="logo-LUX">LUX</span>
-        </div>
-    </div>
+            <div class="logo" style="justify-content:center; margin-bottom:15px;">
+                <div class="logo-bars">
+                    <div class="logo-bar"></div>
+                    <div class="logo-bar"></div>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-heavy">HEAVY</span>
+                    <span class="logo-lux">LUX</span>
+                </div>
+            </div>
             <h2>Panel Administrativo</h2>
             <p class="login-sub">Ingresa tus credenciales para continuar</p>
             <form class="login-form" action="/login" method="POST">
@@ -32,10 +31,16 @@
                     <input type="password" name="password" placeholder="••••••••" required>
                 </div>
                 <div id="error-login" style="color:#CC0000; font-size:13px; margin-bottom:10px;"></div>
-                <button type="submit" class="btn-submit">Ingresa</button>
+                <button type="submit" class="btn-submit">Ingresar</button>
             </form>
+            <p style="margin-top:20px; font-size:13px;"><a href="/" style="color:#aaaaaa;">← Volver al sitio</a></p>
         </div>
     </div>
+    <script>
+        if (new URLSearchParams(window.location.search).get('error')) {
+            document.getElementById('error-login').textContent = 'Correo o contraseña incorrectos.';
+        }
+    </script>
 </body>
 </html>
 
