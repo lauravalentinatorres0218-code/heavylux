@@ -80,7 +80,7 @@ app.post(`/cotizar`, (req, res) => {
             res.send(`Error al enviar la cotización`);
             return;
         }
-        res.send(`Cotización enviada exitosamente`);
+        res.redirect('/cotizar?enviado=1');
     });
 });
 app.get(`/admin`, verificarSesion, (req, res) => {

@@ -42,6 +42,9 @@
             <h1>Solicitar Cotización</h1>
             <p>Diligenciar el formulario y te contactamos en menos de 24 horas</p>
         </div>
+        <div 
+            id="aviso-ok" class="aviso-ok" style="display:none">✔ ¡Solicitud enviada! Te contactaremos pronto.
+        </div>
         <form class="cotizar-form" action="/cotizar" method="POST">
             <div class="form-group">
                 <label for="nombre">Nombre Completo</label>
@@ -75,6 +78,10 @@
     <script>
         const p = new URLSearchParams(window.location.search).get('productos');
         if (p) document.getElementById('productos').value = p;
+
+        if (new URLSearchParams(window.location.search).get('enviado')) {
+            document.getElementById('aviso-ok').style.display = 'block';
+        }
     </script>
 
 </body>
