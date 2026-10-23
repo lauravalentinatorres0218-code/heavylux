@@ -866,7 +866,7 @@ a.categoria-card {
     .logo-heavy { font-size: 17px; }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 640px) {
     .navbar {
         flex-wrap: wrap !important;
         justify-content: center;
