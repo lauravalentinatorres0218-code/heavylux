@@ -553,14 +553,14 @@ body{
     max-width: 1100px;
     margin: 0 auto;
 }
-.nosotros-content h2 {
+.nosotros-texto h2 {
     font-size: 20px;
     font-weight: 800;
     color: #CC0000;
     margin-top: 30px;
     margin-bottom: 10px;
 }
-.nosotros-content p {
+.nosotros-texto p {
     color: #aaaaaa;
     font-size: 14px;
     line-height: 1.8;
