@@ -871,6 +871,16 @@ html { scroll-behavior: smooth; }
 }
 .admin-card { display: flex; flex-direction: column; justify-content: space-between; }
 .cuenta-box .btn-secondary { display: inline-block; margin-top: 25px; margin-left: 10px; }
+.datos-pago {
+    background-color: #1a1a1a;
+    border: 1px solid #CC0000;
+    border-radius: 6px;
+    padding: 14px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #ffffff;
+    margin-top: 5px;
+}
 /* Tablet y pantallas medianas */
 @media (max-width: 1100px) {
     .productos-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }

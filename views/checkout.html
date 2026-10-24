@@ -48,6 +48,7 @@
                 <label class="pago-opcion"><input type="radio" name="pago" value="Contraentrega" checked> Pago contra entrega</label>
                 <label class="pago-opcion"><input type="radio" name="pago" value="Transferencia"> Transferencia bancaria</label>
                 <label class="pago-opcion"><input type="radio" name="pago" value="Nequi"> Nequi / Daviplata</label>
+                <div id="datos-pago" class="datos-pago" style="display:none"></div>
                 <button type="submit" class="btn-submit">Confirmar pedido</button>
             </form>
             <div class="checkout-resumen">
@@ -62,16 +63,51 @@
         <p><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></p>
         <p>© 2026 HeavyLux · Todos los derechos reservados</p>
     </footer>
+
     <script>
         const items = JSON.parse(localStorage.getItem('carrito') || '[]');
         const cont = document.getElementById('checkout-contenido');
+        const DATOS_PAGO = { 'Contraentrega': '', 'Transferencia': '', 'Nequi': '' };
+
+        function esc(t) {
+            return String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+
+        function mostrarDatosPago() {
+            const sel = document.querySelector('input[name="pago"]:checked');
+            const caja = document.getElementById('datos-pago');
+            if (!sel || !caja) return;
+            const html = DATOS_PAGO[sel.value] || '';
+            caja.innerHTML = html;
+            caja.style.display = html ? 'block' : 'none';
+        }
+
+        fetch('/api/pago').then(r => r.json()).then(d => {
+            DATOS_PAGO.Transferencia = d.transferencia
+                ? '<strong>Transferencia bancaria</strong><br>' + esc(d.transferencia).replace(/\n/g, '<br>')
+                : '<strong>Transferencia bancaria</strong><br>Te enviaremos los datos al confirmar tu pedido.';
+            DATOS_PAGO.Nequi = d.nequi
+                ? '<strong>Nequi / Daviplata</strong><br>' + esc(d.nequi).replace(/\n/g, '<br>')
+                : '<strong>Nequi / Daviplata</strong><br>Te enviaremos los datos al confirmar tu pedido.';
+            mostrarDatosPago();
+        });
 
         if (items.length === 0) {
             cont.innerHTML = '<p style="color:#aaaaaa">Tu carrito está vacío. <a href="/catalogo" style="color:#CC0000">Ver catálogo</a></p>';
         } else {
-            const total = items.reduce((s, p) => s + Number(p.precio) * (p.cantidad || 1), 0);            document.getElementById('resumen-items').innerHTML = items.map(p =>
-            '<div class="carrito-item"><span>' + p.nombre + ' x' + (p.cantidad || 1) + '</span><span>$' + (Number(p.precio) * (p.cantidad || 1)).toLocaleString('es-CO') + '</span></div>'            ).join('');
+            const total = items.reduce((s, p) => s + Number(p.precio) * (p.cantidad || 1), 0);
+            document.getElementById('resumen-items').innerHTML = items.map(p =>
+                '<div class="carrito-item"><span>' + esc(p.nombre) + ' x' + (p.cantidad || 1) + '</span><span>$' +
+                (Number(p.precio) * (p.cantidad || 1)).toLocaleString('es-CO') + '</span></div>'
+            ).join('');
             document.getElementById('resumen-total').textContent = 'Total: $' + total.toLocaleString('es-CO');
+
+            document.querySelectorAll('input[name="pago"]').forEach(r => r.addEventListener('change', mostrarDatosPago));
+
+            fetch('/api/cuenta').then(r => r.json()).then(u => {
+                document.getElementById('c-nombre').value = u.nombre || '';
+                document.getElementById('c-correo').value = u.correo || '';
+            });
 
             document.getElementById('form-checkout').addEventListener('submit', (e) => {
                 e.preventDefault();
@@ -96,18 +132,13 @@
                     cont.innerHTML = '<div class="checkout-ok"><h2>¡Pedido recibido!</h2>' +
                         '<p>Tu número de pedido es <strong>#' + data.id + '</strong>.</p>' +
                         '<p>Total: $' + Number(data.total).toLocaleString('es-CO') + '</p>' +
+                        (DATOS_PAGO[pedido.metodo_pago] ? '<div class="datos-pago">' + DATOS_PAGO[pedido.metodo_pago] + '</div>' : '') +
                         '<p>Te contactaremos pronto para confirmar el pago y el envío.</p>' +
                         '<a href="/catalogo" class="btn-primary">Seguir comprando</a></div>';
                 })
                 .catch(() => alert('No se pudo enviar el pedido'));
             });
         }
-                fetch('/api/cuenta').then(r => r.json()).then(u => {
-                    const n = document.getElementById('c-nombre');
-                    const c = document.getElementById('c-correo');
-                    if (n) n.value = u.nombre || '';
-                    if (c) c.value = u.correo || '';
-                });
-</script>
+    </script>
 </body>
 </html>
