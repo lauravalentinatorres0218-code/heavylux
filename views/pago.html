@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago - HeavyLux</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="pasarela">
+    <div class="pasarela-izq">
+        <div class="logo" style="margin-bottom:20px;">
+            <div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div></div>
+            <div class="logo-text"><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></div>
+        </div>
+        <p class="aviso-sim">Simulación académica: no escribas datos bancarios reales. Nada de lo que escribas aquí se guarda ni se envía.</p>
+        <h2 id="titulo-metodo">Pago</h2>
+        <form id="form-pago" class="pasarela-form"></form>
+        <p style="margin-top:20px"><a href="/catalogo" style="color:#888">No deseo continuar</a></p>
+    </div>
+    <div class="pasarela-der">
+        <p>Total a pagar</p>
+        <h1 id="p-total">$0</h1>
+        <div class="pasarela-detalle">
+            <p><span>Referencia</span><strong id="p-ref"></strong></p>
+            <p><span>Método</span><strong id="p-metodo"></strong></p>
+        </div>
+    </div>
+</div>
+
+<div id="modal-ok" class="modal" style="display:none">
+    <div class="modal-caja">
+        <div class="modal-check">✔</div>
+        <h2>Pago exitoso</h2>
+        <p id="m-ref"></p><p id="m-fecha"></p><p id="m-valor"></p>
+        <p>Tu pago se ha registrado de manera exitosa</p>
+        <a href="/catalogo" class="btn-primary">Aceptar</a>
+    </div>
+</div>
+
+<script>
+    const id = window.location.pathname.split('/').pop();
+    let pedido = null;
+    const campos = {
+        Tarjeta: '<input placeholder="Número de tarjeta (simulado)" maxlength="19" required><div class="fila"><input placeholder="MM / AA" maxlength="5" required><input placeholder="CVV" maxlength="4" required></div><input placeholder="Nombre del titular" required><input placeholder="Cédula" required>',
+        PSE: '<select required><option value="">Tipo de persona</option><option>Natural</option><option>Jurídica</option></select><select required><option value="">Seleccione su banco</option><option>Banco de ejemplo A</option><option>Banco de ejemplo B</option></select><input placeholder="Nombre" required><input placeholder="Cédula" required><input placeholder="Celular" required>',
+        Nequi: '<input placeholder="Celular Nequi" required><input placeholder="Código de verificación (cualquier número)" required>'
+    };
+    fetch('/api/pedidos/' + id).then(r => r.json()).then(p => {
+        if (p.error) { document.body.innerHTML = '<p style="padding:40px">Pedido no encontrado.</p>'; return; }
+        pedido = p;
+        const total = '$' + Number(p.total).toLocaleString('es-CO');
+        document.getElementById('p-total').textContent = total;
+        document.getElementById('p-ref').textContent = p.id;
+        document.getElementById('p-metodo').textContent = p.metodo_pago;
+        document.getElementById('titulo-metodo').textContent = 'Pago con ' + p.metodo_pago;
+        document.getElementById('form-pago').innerHTML = (campos[p.metodo_pago] || '') +
+            '<button type="submit" class="btn-pagar">Pagar ' + total + '</button>';
+    });
+    document.getElementById('form-pago').addEventListener('submit', (e) => {
+        e.preventDefault();
+        fetch('/api/pedidos/' + id + '/pagar', { method: 'POST' }).then(r => r.json()).then(d => {
+            if (d.error) { alert(d.error); return; }
+            document.getElementById('m-ref').textContent = 'ID de la transacción: ' + d.referencia;
+            document.getElementById('m-fecha').textContent = 'Fecha: ' + new Date(d.fecha).toLocaleDateString('es-CO');
+            document.getElementById('m-valor').textContent = 'Valor: $' + Number(pedido.total).toLocaleString('es-CO');
+            document.getElementById('modal-ok').style.display = 'flex';
+        });
+    });
+</script>
+</body>
+</html>

@@ -45,9 +45,10 @@
                 <input type="text" id="c-direccion" placeholder="Dirección de entrega" required>
                 <input type="text" id="c-ciudad" placeholder="Ciudad o municipio" required>
                 <h2>Método de pago</h2>
-                <label class="pago-opcion"><input type="radio" name="pago" value="Contraentrega" checked> Pago contra entrega</label>
-                <label class="pago-opcion"><input type="radio" name="pago" value="Transferencia"> Transferencia bancaria</label>
-                <label class="pago-opcion"><input type="radio" name="pago" value="Nequi"> Nequi / Daviplata</label>
+                <label class="pago-opcion"><input type="radio" name="pago" value="Tarjeta" checked> <span>💳 Tarjeta crédito / débito</span></label>
+                <label class="pago-opcion"><input type="radio" name="pago" value="PSE"> <span>🏦 PSE (cuenta de ahorros o corriente)</span></label>
+                <label class="pago-opcion"><input type="radio" name="pago" value="Nequi"> <span>📱 Nequi</span></label>
+                <label class="pago-opcion"><input type="radio" name="pago" value="Contraentrega"> <span>🚚 Pago contra entrega</span></label>
                 <div id="campo-pago" style="display:none">
                     <input type="text" id="c-pago-detalle" placeholder="Detalles del pago">
                 </div>
@@ -74,14 +75,7 @@
             return String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
         }
 
-        function mostrarCampoPago() {
-            const sel = document.querySelector('input[name="pago"]:checked').value;
-            const caja = document.getElementById('campo-pago');
-            const input = document.getElementById('c-pago-detalle');
-            if (sel === 'Transferencia') input.placeholder = 'Banco y número de comprobante';
-            if (sel === 'Nequi') input.placeholder = 'Celular desde el que pagas y número de referencia';
-            caja.style.display = sel === 'Contraentrega' ? 'none' : 'block';
-        }
+
 
         if (items.length === 0) {
             cont.innerHTML = '<p style="color:#aaaaaa">Tu carrito está vacío. <a href="/catalogo" style="color:#CC0000">Ver catálogo</a></p>';
@@ -92,9 +86,6 @@
                 (Number(p.precio) * (p.cantidad || 1)).toLocaleString('es-CO') + '</span></div>'
             ).join('');
             document.getElementById('resumen-total').textContent = 'Total: $' + total.toLocaleString('es-CO');
-
-            document.querySelectorAll('input[name="pago"]').forEach(r => r.addEventListener('change', mostrarCampoPago));
-            mostrarCampoPago();
 
             fetch('/api/cuenta').then(r => r.json()).then(u => {
                 document.getElementById('c-nombre').value = u.nombre || '';
@@ -110,7 +101,6 @@
                     direccion: document.getElementById('c-direccion').value,
                     ciudad: document.getElementById('c-ciudad').value,
                     metodo_pago: document.querySelector('input[name="pago"]:checked').value,
-                    pago_detalle: document.getElementById('c-pago-detalle').value,
                     items: items.map(p => ({ id: p.id, cantidad: p.cantidad || 1 }))
                 };
                 fetch('/api/pedidos', {
@@ -122,11 +112,15 @@
                 .then(data => {
                     if (data.error) { alert(data.error); return; }
                     localStorage.removeItem('carrito');
-                    cont.innerHTML = '<div class="checkout-ok"><h2>¡Pedido recibido!</h2>' +
-                        '<p>Tu número de pedido es <strong>#' + data.id + '</strong>.</p>' +
-                        '<p>Total: $' + Number(data.total).toLocaleString('es-CO') + '</p>' +
-                        '<p>Te contactaremos pronto para confirmar el pago y el envío.</p>' +
-                        '<a href="/catalogo" class="btn-primary">Seguir comprando</a></div>';
+                    if (pedido.metodo_pago === 'Contraentrega') {
+                        cont.innerHTML = '<div class="checkout-ok"><h2>¡Pedido recibido!</h2>' +
+                            '<p>Tu número de pedido es <strong>#' + data.id + '</strong>.</p>' +
+                            '<p>Total: $' + Number(data.total).toLocaleString('es-CO') + '</p>' +
+                            '<p>Pagas al recibir tu pedido.</p>' +
+                            '<a href="/catalogo" class="btn-primary">Seguir comprando</a></div>';
+                    } else {
+                        window.location.href = '/pago/' + data.id;
+                    }
                 })
                 .catch(() => alert('No se pudo enviar el pedido'));
             });

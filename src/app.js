@@ -324,4 +324,22 @@ app.post('/registro', (req, res) => {
         );
     });
 });
+app.get('/pago/:id', verificarSesion, (req, res) => {
+    res.sendFile(path.join(__dirname, '../views/pago.html'));
+});
+
+app.get('/api/pedidos/:id', verificarSesion, (req, res) => {
+    db.query('SELECT id, total, estado, metodo_pago, fecha FROM ordenes WHERE id = ?', [req.params.id], (err, r) => {
+        if (err || r.length === 0) return res.status(404).json({ error: 'Pedido no encontrado' });
+        res.json(r[0]);
+    });
+});
+
+app.post('/api/pedidos/:id/pagar', verificarSesion, (req, res) => {
+    db.query("UPDATE ordenes SET estado = 'pagado' WHERE id = ? AND estado = 'pendiente'", [req.params.id], (err, r) => {
+        if (err) return res.status(500).json({ error: 'Error al registrar el pago' });
+        if (r.affectedRows === 0) return res.status(400).json({ error: 'El pedido ya fue pagado' });
+        res.json({ referencia: req.params.id, fecha: new Date() });
+    });
+});
 app.use((req, res) => res.status(404).send('Página no encontrada'));
