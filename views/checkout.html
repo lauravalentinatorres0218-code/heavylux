@@ -48,7 +48,9 @@
                 <label class="pago-opcion"><input type="radio" name="pago" value="Contraentrega" checked> Pago contra entrega</label>
                 <label class="pago-opcion"><input type="radio" name="pago" value="Transferencia"> Transferencia bancaria</label>
                 <label class="pago-opcion"><input type="radio" name="pago" value="Nequi"> Nequi / Daviplata</label>
-                <div id="datos-pago" class="datos-pago" style="display:none"></div>
+                <div id="campo-pago" style="display:none">
+                    <input type="text" id="c-pago-detalle" placeholder="Detalles del pago">
+                </div>
                 <button type="submit" class="btn-submit">Confirmar pedido</button>
             </form>
             <div class="checkout-resumen">
@@ -67,30 +69,19 @@
     <script>
         const items = JSON.parse(localStorage.getItem('carrito') || '[]');
         const cont = document.getElementById('checkout-contenido');
-        const DATOS_PAGO = { 'Contraentrega': '', 'Transferencia': '', 'Nequi': '' };
 
         function esc(t) {
             return String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
         }
 
-        function mostrarDatosPago() {
-            const sel = document.querySelector('input[name="pago"]:checked');
-            const caja = document.getElementById('datos-pago');
-            if (!sel || !caja) return;
-            const html = DATOS_PAGO[sel.value] || '';
-            caja.innerHTML = html;
-            caja.style.display = html ? 'block' : 'none';
+        function mostrarCampoPago() {
+            const sel = document.querySelector('input[name="pago"]:checked').value;
+            const caja = document.getElementById('campo-pago');
+            const input = document.getElementById('c-pago-detalle');
+            if (sel === 'Transferencia') input.placeholder = 'Banco y número de comprobante';
+            if (sel === 'Nequi') input.placeholder = 'Celular desde el que pagas y número de referencia';
+            caja.style.display = sel === 'Contraentrega' ? 'none' : 'block';
         }
-
-        fetch('/api/pago').then(r => r.json()).then(d => {
-            DATOS_PAGO.Transferencia = d.transferencia
-                ? '<strong>Transferencia bancaria</strong><br>' + esc(d.transferencia).replace(/\n/g, '<br>')
-                : '<strong>Transferencia bancaria</strong><br>Te enviaremos los datos al confirmar tu pedido.';
-            DATOS_PAGO.Nequi = d.nequi
-                ? '<strong>Nequi / Daviplata</strong><br>' + esc(d.nequi).replace(/\n/g, '<br>')
-                : '<strong>Nequi / Daviplata</strong><br>Te enviaremos los datos al confirmar tu pedido.';
-            mostrarDatosPago();
-        });
 
         if (items.length === 0) {
             cont.innerHTML = '<p style="color:#aaaaaa">Tu carrito está vacío. <a href="/catalogo" style="color:#CC0000">Ver catálogo</a></p>';
@@ -102,7 +93,8 @@
             ).join('');
             document.getElementById('resumen-total').textContent = 'Total: $' + total.toLocaleString('es-CO');
 
-            document.querySelectorAll('input[name="pago"]').forEach(r => r.addEventListener('change', mostrarDatosPago));
+            document.querySelectorAll('input[name="pago"]').forEach(r => r.addEventListener('change', mostrarCampoPago));
+            mostrarCampoPago();
 
             fetch('/api/cuenta').then(r => r.json()).then(u => {
                 document.getElementById('c-nombre').value = u.nombre || '';
@@ -118,6 +110,7 @@
                     direccion: document.getElementById('c-direccion').value,
                     ciudad: document.getElementById('c-ciudad').value,
                     metodo_pago: document.querySelector('input[name="pago"]:checked').value,
+                    pago_detalle: document.getElementById('c-pago-detalle').value,
                     items: items.map(p => ({ id: p.id, cantidad: p.cantidad || 1 }))
                 };
                 fetch('/api/pedidos', {
@@ -132,7 +125,6 @@
                     cont.innerHTML = '<div class="checkout-ok"><h2>¡Pedido recibido!</h2>' +
                         '<p>Tu número de pedido es <strong>#' + data.id + '</strong>.</p>' +
                         '<p>Total: $' + Number(data.total).toLocaleString('es-CO') + '</p>' +
-                        (DATOS_PAGO[pedido.metodo_pago] ? '<div class="datos-pago">' + DATOS_PAGO[pedido.metodo_pago] + '</div>' : '') +
                         '<p>Te contactaremos pronto para confirmar el pago y el envío.</p>' +
                         '<a href="/catalogo" class="btn-primary">Seguir comprando</a></div>';
                 })

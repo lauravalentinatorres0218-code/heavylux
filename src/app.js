@@ -165,36 +165,6 @@ app.delete('/api/productos/:id', soloAdmin, (req, res) => {
 app.get('/producto/:id', (req, res) => {
     res.sendFile(path.join(__dirname, '../views/producto.html'));
 });
-db.query(`CREATE TABLE IF NOT EXISTS configuracion (
-    clave VARCHAR(50) PRIMARY KEY,
-    valor TEXT
-)`, (err) => { if (err) console.error(err); });
-
-app.get('/api/pago', (req, res) => {
-    db.query("SELECT clave, valor FROM configuracion WHERE clave IN ('transferencia','nequi')", (err, rows) => {
-        if (err) return res.status(500).json({ error: 'Error' });
-        const out = { transferencia: '', nequi: '' };
-        rows.forEach(r => { out[r.clave] = r.valor || ''; });
-        res.json(out);
-    });
-});
-
-app.put('/api/pago', soloAdmin, (req, res) => {
-    const { transferencia, nequi } = req.body;
-    const sql = 'INSERT INTO configuracion (clave, valor) VALUES (?, ?) ON DUPLICATE KEY UPDATE valor = VALUES(valor)';
-    db.query(sql, ['transferencia', transferencia || ''], (e1) => {
-        if (e1) return res.status(500).json({ error: 'Error' });
-        db.query(sql, ['nequi', nequi || ''], (e2) => {
-            if (e2) return res.status(500).json({ error: 'Error' });
-            res.json({ mensaje: 'Guardado' });
-        });
-    });
-});
-
-app.get('/admin/pago', soloAdmin, (req, res) => {
-    res.sendFile(path.join(__dirname, '../views/admin-pago.html'));
-});
-
 app.get('/api/productos/:id', (req, res) => {
     db.query('SELECT * FROM productos WHERE id = ?', [req.params.id], (err, results) => {
         if (err || results.length === 0) {
@@ -241,6 +211,7 @@ db.query(`CREATE TABLE IF NOT EXISTS ordenes (
     direccion VARCHAR(255),
     ciudad VARCHAR(100),
     metodo_pago VARCHAR(50),
+    pago_detalle VARCHAR(255),
     productos TEXT,
     total DECIMAL(12,2),
     estado VARCHAR(50) DEFAULT 'pendiente',
@@ -253,7 +224,7 @@ app.get('/checkout', verificarSesion, (req, res) => {
 
 app.post('/api/pedidos', (req, res) => {
     if (!req.session.usuario) return res.status(401).json({ error: 'Debes iniciar sesión' });
-    const { nombre, telefono, correo, direccion, ciudad, metodo_pago, items } = req.body;
+    const { nombre, telefono, correo, direccion, ciudad, metodo_pago, pago_detalle, items } = req.body;
     if (!Array.isArray(items) || items.length === 0) {
         return res.status(400).json({ error: 'Carrito vacío' });
     }
@@ -278,8 +249,8 @@ app.post('/api/pedidos', (req, res) => {
         }
         const lista = partes.join(', ');
         db.query(
-            'INSERT INTO ordenes (nombre, telefono, correo, direccion, ciudad, metodo_pago, productos, total) VALUES (?,?,?,?,?,?,?,?)',
-            [nombre, telefono, correo, direccion, ciudad, metodo_pago, lista, total],
+            'INSERT INTO ordenes (nombre, telefono, correo, direccion, ciudad, metodo_pago, pago_detalle, productos, total) VALUES (?,?,?,?,?,?,?,?,?)',
+            [nombre, telefono, correo, direccion, ciudad, metodo_pago, pago_detalle || '', lista, total],
             (err2, result) => {
                 if (err2) {
                     console.error('Error creando pedido:', err2);
