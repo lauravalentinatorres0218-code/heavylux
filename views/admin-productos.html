@@ -32,11 +32,11 @@
         <table class="admin-tabla">
             <thead>
                 <tr>
-                    <th>ID</th><th>Nombre</th><th>Precio</th><th>Categoría</th><th>Stock</th><th>Acción</th>
+                    <th>ID</th><th>Nombre</th><th>Marca</th><th>Precio</th><th>Categoría</th><th>Stock</th><th>Acción</th>
                 </tr>
             </thead>
             <tbody id="productos-tbody">
-                <tr><td colspan="6">Cargando productos...</td></tr>
+                <tr><td colspan="7">Cargando productos...</td></tr>
             </tbody>
         </table>
     </div>
@@ -48,8 +48,8 @@
                 <input type="text" id="prod-nombre" placeholder="Nombre del producto" required>
             </div>
             <div class="form-group">
-                <label>Descripcion</label>
-                <textarea id="prod-descripcion" placeholder="Descripcion" rows="3"></textarea>
+                <label>Descripción</label>
+                <textarea id="prod-descripcion" placeholder="Descripción" rows="3"></textarea>
             </div>
             <div class="form-group">
                 <label>Precio</label>
@@ -71,8 +71,28 @@
                 </select>
             </div>
             <div class="form-group">
+                <label>Marca</label>
+                <input type="text" id="prod-marca" placeholder="Ej: HeavyLux">
+            </div>
+            <div class="form-group">
+                <label>Referencia</label>
+                <input type="text" id="prod-referencia" placeholder="Ej: HLX-LED-48P">
+            </div>
+            <div class="form-group">
+                <label>Especificaciones (una por línea, formato Clave: Valor)</label>
+                <textarea id="prod-especificaciones" rows="5" placeholder="Potencia: 240W&#10;Voltaje: 10-30V DC"></textarea>
+            </div>
+            <div class="form-group">
                 <label>Imagen</label>
                 <input type="text" id="prod-imagen" placeholder="nombre-imagen.jpg">
+            </div>
+            <div class="form-group">
+                <label>Imagen 2 (opcional)</label>
+                <input type="text" id="prod-imagen2" placeholder="nombre-imagen-2.jpg">
+            </div>
+            <div class="form-group">
+                <label>Imagen 3 (opcional)</label>
+                <input type="text" id="prod-imagen3" placeholder="nombre-imagen-3.jpg">
             </div>
             <button type="submit" class="btn-submit">Agregar producto</button>
         </form>
@@ -92,13 +112,14 @@
             .then(data => {
                 const tbody = document.getElementById('productos-tbody');
                 if (data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6">No hay productos.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="7">No hay productos.</td></tr>';
                     return;
                 }
                 tbody.innerHTML = data.map(p => `
                     <tr>
                         <td>${p.id}</td>
                         <td>${esc(p.nombre)}</td>
+                        <td>${esc(p.marca || '-')}</td>
                         <td>$${Number(p.precio).toLocaleString('es-CO')}</td>
                         <td>${esc(p.categoria)}</td>
                         <td>${p.stock}</td>
@@ -126,7 +147,12 @@
             precio: document.getElementById('prod-precio').value,
             stock: document.getElementById('prod-stock').value,
             categoria: document.getElementById('prod-categoria').value,
-            imagen: document.getElementById('prod-imagen').value
+            imagen: document.getElementById('prod-imagen').value,
+            marca: document.getElementById('prod-marca').value,
+            referencia: document.getElementById('prod-referencia').value,
+            especificaciones: document.getElementById('prod-especificaciones').value,
+            imagen2: document.getElementById('prod-imagen2').value,
+            imagen3: document.getElementById('prod-imagen3').value
         };
         fetch('/api/productos', {
             method: 'POST',
@@ -134,7 +160,8 @@
             body: JSON.stringify(producto)
         })
         .then(res => res.json())
-        .then(() => {
+        .then(d => {
+            if (d.error) { alert(d.error); return; }
             alert('Producto agregado exitosamente');
             e.target.reset();
             cargarProductos();

@@ -116,7 +116,7 @@ app.post('/login', (req, res) => {
             const c = rc[0];
             if (await bcrypt.compare(password, c.password)) {
                 req.session.usuario = { id: c.id, nombre: c.nombre, correo: c.correo, rol: 'cliente' };
-                return res.redirect('/carrito');
+                return res.redirect('/');
             }
             res.redirect('/login?error=1');
         });
@@ -139,9 +139,9 @@ app.get(`/api/productos`, (req, res) => {
     });
 });
 app.post('/api/productos', soloAdmin, (req, res) => {    
-    const { nombre, descripcion, precio, stock, categoria, imagen } = req.body;
-    const sql = `INSERT INTO productos (nombre, descripcion, precio, stock, categoria, imagen) VALUES (?, ?, ?, ?, ?, ?)`;
-    db.query(sql, [nombre, descripcion, precio, stock, categoria, imagen], (err, result) => {
+        const { nombre, descripcion, precio, stock, categoria, imagen, marca, referencia, especificaciones, imagen2, imagen3 } = req.body;
+    const sql = `INSERT INTO productos (nombre, descripcion, precio, stock, categoria, imagen, marca, referencia, especificaciones, imagen2, imagen3) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
+    db.query(sql, [nombre, descripcion, precio, stock, categoria, imagen, marca, referencia, especificaciones, imagen2, imagen3], (err, result) => {
         if (err) {
             console.error('Error agregando producto:', err);
             res.status(500).json({ error: 'Error al agregar producto' });
@@ -184,12 +184,12 @@ app.put('/api/cotizaciones/:id', soloAdmin, (req, res) => {
     });
 });
 app.get('/api/usuarios/total', soloAdmin, (req, res) => {
-    db.query('SELECT COUNT(*) AS total FROM usuarios', (err, results) => {
+    db.query('SELECT (SELECT COUNT(*) FROM usuarios) AS admins, (SELECT COUNT(*) FROM clientes) AS clientes', (err, r) => {
         if (err) {
             console.error('Error contando usuarios:', err);
             return res.status(500).json({ error: 'Error al contar usuarios' });
         }
-        res.json({ total: results[0].total });
+        res.json({ admins: r[0].admins, clientes: r[0].clientes, total: r[0].admins + r[0].clientes });
     });
 });
 app.get('/cuenta', verificarSesion, (req, res) => {
@@ -319,7 +319,7 @@ app.post('/registro', (req, res) => {
             (err2, result) => {
                 if (err2) return res.redirect('/registro?error=1');
                 req.session.usuario = { id: result.insertId, nombre, correo, rol: 'cliente' };
-                res.redirect('/carrito');
+                res.redirect('/');
             }
         );
     });

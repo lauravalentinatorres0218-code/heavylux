@@ -1,46 +1,42 @@
 <!DOCTYPE html>
-<html lang="es"><head>
-
+<html lang="es">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Admin - HeavyLux</title>
     <link rel="stylesheet" href="/css/style.css">
-
 </head>
 <body>
-<!--BARRA SUPERIOR-->
 <div class="top-bar">
     <p>PANEL ADMINISTRATIVO · HEAVYLUX</p>
 </div>
-<!--NAVEGACIÓN-->
 <nav class="navbar">
-<div class="logo">
-    <div class="logo-bars">
-        <div class="logo-bar"></div>
-        <div class="logo-bar"></div>
+    <div class="logo">
+        <div class="logo-bars">
+            <div class="logo-bar"></div>
+            <div class="logo-bar"></div>
+        </div>
+        <div class="logo-text">
+            <span class="logo-heavy">HEAVY</span>
+            <span class="logo-lux">LUX</span>
+        </div>
     </div>
-    <div class="logo-text">
-        <span class="logo-heavy">HEAVY</span>
-        <span class="logo-lux">LUX</span>
-    </div>
-</div>
-<ul class="nav-links">
-    <li><a href="/admin">INICIO</a></li>
-    <li><a href="/admin/cotizaciones-lista">COTIZACIONES</a></li>
-    <li><a href="/admin/pedidos">PEDIDOS</a></li>
-    <li><a href="/admin/productos">PRODUCTOS</a></li>
-</ul>
+    <ul class="nav-links">
+        <li><a href="/admin">INICIO</a></li>
+        <li><a href="/admin/cotizaciones-lista">COTIZACIONES</a></li>
+        <li><a href="/admin/pedidos">PEDIDOS</a></li>
+        <li><a href="/admin/productos">PRODUCTOS</a></li>
+    </ul>
     <div class="navbar-actions">
         <a href="/cuenta" class="navbar-icon btn-carrito">👤 CUENTA</a>
     </div>
 </nav>
-<!--DASHBOARD-->
 <section class="admin-dashboard">
     <h1>PANEL ADMINISTRATIVO</h1>
     <div class="admin-cards">
         <div class="admin-card">
             <h3>Cotizaciones</h3>
-            <p class="admin-numero">0</p>
+            <p class="admin-numero" id="contador-cotizaciones">0</p>
             <p class="admin-sub">Total recibidas</p>
             <a href="/admin/cotizaciones-lista" class="btn-primary">Ver todas</a>
         </div>
@@ -53,24 +49,24 @@
         <div class="admin-card">
             <h3>Usuarios</h3>
             <p class="admin-numero" id="contador-usuarios">0</p>
-            <p class="admin-sub">Registrados</p>
+            <p class="admin-sub" id="usuarios-detalle">Registrados</p>
         </div>
     </div>
 </section>
-<!--FOOTER-->
 <footer class="footer">
-    <p><span class="logo-heavy">HEAVY</span><span class="logo-LUX">LUX</span></p>
+    <p><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></p>
     <p>© 2026 HeavyLux · Panel Administrativo</p>
 </footer>
 <script>
     fetch('/admin/cotizaciones').then(r => r.json()).then(d => {
-        document.querySelector('.admin-numero').textContent = d.length;
+        document.getElementById('contador-cotizaciones').textContent = d.length;
     });
     fetch('/api/productos').then(r => r.json()).then(d => {
         document.getElementById('contador-productos').textContent = d.length;
     });
     fetch('/api/usuarios/total').then(r => r.json()).then(d => {
         document.getElementById('contador-usuarios').textContent = d.total;
+        document.getElementById('usuarios-detalle').textContent = d.clientes + ' clientes · ' + d.admins + ' admin';
     });
 </script>
 </body>

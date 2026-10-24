@@ -7,23 +7,12 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <!--BARRA SUPERIOR-->
-    <div class="top-bar">
-        <p>ENVIOS A TODO EL META · WHATSAPP +57 313 734 9236 · LUN-SÁB 8AM-6PM</p>
-    </div>
-
-    <!--NAVEGACION-->
-<nav class="navbar">
-    <div class="logo">
-        <div class="logo-bars">
-            <div class="logo-bar"></div>
-            <div class="logo-bar"></div>
+    <div class="top-bar"><p>ENVIOS A TODO EL META · WHATSAPP +57 313 734 9236 · LUN-SÁB 8AM-6PM</p></div>
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div></div>
+            <div class="logo-text"><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></div>
         </div>
-        <div class="logo-text">
-            <span class="logo-heavy">HEAVY</span>
-            <span class="logo-LUX">LUX</span>
-        </div>
-    </div>
         <ul class="nav-links">
             <li><a href="/">INICIO</a></li>
             <li><a href="/catalogo">CATÁLOGO</a></li>
@@ -31,58 +20,84 @@
             <li><a href="/nosotros">NOSOTROS</a></li>
             <li><a href="/contacto">CONTACTO</a></li>
         </ul>
-      <div class="navbar-actions">
+        <div class="navbar-actions">
             <a href="/cuenta" class="navbar-icon">👤 CUENTA</a>
             <a href="/carrito" class="navbar-icon btn-carrito">🛒 CARRITO</a>
-      </div>    
+        </div>
     </nav>
-    <!--CONTENIDO PRINCIPAL-->
-    <section class="cotizar">
-        <div class="cotizar-header">
-            <h1>Solicitar Cotización</h1>
-            <p>Diligenciar el formulario y te contactamos en menos de 24 horas</p>
+
+    <section class="cot">
+        <div class="cot-contenido">
+            <div class="cot-principal">
+                <p class="cot-ruta"><a href="/">Inicio</a> / <span>Solicitar cotización</span></p>
+                <h1>Solicitar Cotización</h1>
+                <p class="cot-sub">Completa el formulario y te contactamos para enviarte tu cotización.</p>
+
+                <div id="aviso-ok" class="aviso-ok" style="display:none">✔ ¡Solicitud enviada! Te contactaremos pronto.</div>
+
+                <form class="cot-form" action="/cotizar" method="POST">
+                    <div class="cot-campo">
+                        <label for="nombre">NOMBRE COMPLETO *</label>
+                        <input type="text" id="nombre" name="nombre" placeholder="Carlos Rodríguez" required>
+                    </div>
+                    <div class="cot-fila">
+                        <div class="cot-campo">
+                            <label for="telefono">TELÉFONO / WHATSAPP *</label>
+                            <input type="tel" id="telefono" name="telefono" placeholder="313 000 0000" required>
+                        </div>
+                        <div class="cot-campo">
+                            <label for="correo">CORREO ELECTRÓNICO *</label>
+                            <input type="email" id="correo" name="correo" placeholder="correo@empresa.com" required>
+                        </div>
+                    </div>
+                    <div class="cot-campo">
+                        <label for="productos">PRODUCTOS DE INTERÉS *</label>
+                        <input type="text" id="productos" name="productos_interes" placeholder="Ej: Filtro de aceite x5, Barra LED 48&quot; x2" required>
+                    </div>
+                    <div class="cot-campo">
+                        <label for="observaciones">OBSERVACIONES ADICIONALES</label>
+                        <textarea id="observaciones" name="observaciones" rows="5" placeholder="Modelo del vehículo, urgencia, ciudad de entrega..."></textarea>
+                    </div>
+                    <button type="submit" class="cot-btn">➤ ENVIAR SOLICITUD DE COTIZACIÓN</button>
+                </form>
+            </div>
+
+            <aside class="cot-lateral">
+                <div class="cot-caja">
+                    <h3>¿Por qué cotizar con nosotros?</h3>
+                    <ul>
+                        <li>Atención personalizada</li>
+                        <li>Repuestos e iluminación para carga pesada</li>
+                        <li>Pago por PSE, tarjeta o contra entrega</li>
+                        <li>Envíos en el Meta</li>
+                    </ul>
+                </div>
+                <div class="cot-caja">
+                    <h3>Cotización rápida</h3>
+                    <p class="cot-nota">Escríbenos directamente por WhatsApp.</p>
+                    <a class="cot-wa" href="https://wa.me/573137349236?text=Hola%20HeavyLux%2C%20quiero%20cotizar" target="_blank">COTIZAR POR WHATSAPP</a>
+                </div>
+                <div class="cot-caja">
+                    <h3>Horario</h3>
+                    <p class="cot-hora"><span>Lunes a Sábado</span><strong>8:00–18:00</strong></p>
+                    <p class="cot-hora"><span>Domingo</span><strong class="cerrado">Cerrado</strong></p>
+                </div>
+            </aside>
         </div>
-        <div 
-            id="aviso-ok" class="aviso-ok" style="display:none">✔ ¡Solicitud enviada! Te contactaremos pronto
-        </div>
-        <form class="cotizar-form" action="/cotizar" method="POST">
-            <div class="form-group">
-                <label for="nombre">Nombre Completo</label>
-                <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
-            </div>
-            <div class="form-group">
-                <label for="telefono">Telefono</label>
-                <input type="tel" id="telefono" name="telefono" placeholder="Tu numero de contacto" required>
-            </div>
-            <div class="form-group">
-                <label for="correo">Correo electrónico</label>
-                <input type="email" id="correo" name="correo" placeholder="Tu correo" required>
-            </div>
-            <div class="form-group">
-                <label for="productos">Productos de interés</label>
-                <textarea id="productos" name="productos_interes" placeholder="¿Qué productos te interesan?" rows="4"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="observaciones">Observaciones</label>
-                <textarea id="observaciones" name="observaciones" placeholder="Informacion adicional" rows="3"></textarea>
-            </div>
-            <button type="submit" class="btn-submit">Enviar solicitud</button>
-        </form>
     </section>
-    <!--FOOTER-->
+
     <footer class="footer">
-        <p><span class="logo-heavy">HEAVY</span> <span class="logo-lux">LUX</span> </p>
+        <p><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></p>
         <p>Acacías, Meta · heavylux@gmail.com</p>
         <p>© 2026 HeavyLux · Todos los derechos reservados</p>
     </footer>
 
     <script>
-        const p = new URLSearchParams(window.location.search).get('productos');
+        const params = new URLSearchParams(window.location.search);
+        const p = params.get('productos');
         if (p) document.getElementById('productos').value = p;
-
-        if (new URLSearchParams(window.location.search).get('enviado')) {
-            document.getElementById('aviso-ok').style.display = 'block';
-        }
+        if (params.get('enviado')) document.getElementById('aviso-ok').style.display = 'block';
     </script>
+    <script src="/js/carrito-contador.js"></script>
 </body>
 </html>

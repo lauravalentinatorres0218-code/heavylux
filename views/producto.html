@@ -7,19 +7,11 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <div class="top-bar">
-        <p>ENVIOS A TODO EL META · WHATSAPP +57 313 734 9236 · LUN-SÁB 8AM-6PM</p>
-    </div>
+    <div class="top-bar"><p>ENVIOS A TODO EL META · WHATSAPP +57 313 734 9236 · LUN-SÁB 8AM-6PM</p></div>
     <nav class="navbar">
         <div class="logo">
-            <div class="logo-bars">
-                <div class="logo-bar"></div>
-                <div class="logo-bar"></div>
-            </div>
-            <div class="logo-text">
-                <span class="logo-heavy">HEAVY</span>
-                <span class="logo-lux">LUX</span>
-            </div>
+            <div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div></div>
+            <div class="logo-text"><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></div>
         </div>
         <ul class="nav-links">
             <li><a href="/">INICIO</a></li>
@@ -34,10 +26,9 @@
         </div>
     </nav>
 
-    <section class="detalle">
-        <a href="/catalogo" class="detalle-volver">← Volver al catálogo</a>
-        <div class="detalle-grid" id="detalle-contenido">
-            <p style="color:#aaaaaa">Cargando producto...</p>
+    <section class="prod">
+        <div class="prod-contenido" id="prod-contenido">
+            <p style="color:#aaa">Cargando producto...</p>
         </div>
     </section>
 
@@ -49,31 +40,93 @@
 
     <script>
         const id = window.location.pathname.split('/').pop();
+        let producto = null;
+        let cantidad = 1;
+
+        function esc(t) {
+            return String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+        function cambiar(delta) {
+            cantidad = Math.min(Math.max(1, producto.stock), Math.max(1, cantidad + delta));
+            document.getElementById('prod-cant').textContent = cantidad;
+        }
+        function agregar() {
+            const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
+            const ex = carrito.find(x => x.id === producto.id);
+            if (ex) ex.cantidad = (ex.cantidad || 1) + cantidad;
+            else carrito.push({ id: producto.id, nombre: producto.nombre, precio: producto.precio, cantidad: cantidad });
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            if (window.actualizarContadorCarrito) actualizarContadorCarrito();
+            alert(producto.nombre + ' x' + cantidad + ' agregado al carrito');
+        }
+        function cotizar() {
+            window.location.href = '/cotizar?productos=' + encodeURIComponent(producto.nombre + ' x' + cantidad);
+        }
+        function whatsapp() {
+            window.open('https://wa.me/573137349236?text=' + encodeURIComponent('Hola HeavyLux, quiero información de: ' + producto.nombre), '_blank');
+        }
+        function verImagen(src, el) {
+            document.getElementById('img-principal').src = '/images/' + src;
+            document.querySelectorAll('.miniatura').forEach(m => m.classList.remove('activa'));
+            el.classList.add('activa');
+        }
+
         fetch('/api/productos/' + id)
-            .then(res => {
-                if (!res.ok) throw new Error('No encontrado');
-                return res.json();
-            })
+            .then(r => { if (!r.ok) throw new Error(); return r.json(); })
             .then(p => {
+                producto = p;
                 document.title = p.nombre + ' - HeavyLux';
-                document.getElementById('detalle-contenido').innerHTML = `
-                    <div class="detalle-imagen">
-                        <img src="/images/${p.imagen}" alt="${p.nombre}">
+                const disp = p.stock > 0;
+                const imgs = [p.imagen, p.imagen2, p.imagen3].filter(x => x && x.trim());
+                const miniaturas = imgs.length > 1 ? '<div class="prod-miniaturas">' + imgs.map((im, i) =>
+                    '<div class="miniatura' + (i === 0 ? ' activa' : '') + '" onclick="verImagen(\'' + esc(im) + '\', this)"><img src="/images/' + esc(im) + '" onerror="this.style.display=\'none\'"></div>'
+                ).join('') + '</div>' : '';
+                const specs = (p.especificaciones || '').split('\n').filter(l => l.includes(':')).map(l => {
+                    const i = l.indexOf(':');
+                    return '<div><span>' + esc(l.slice(0, i).trim()) + '</span><strong>' + esc(l.slice(i + 1).trim()) + '</strong></div>';
+                }).join('');
+                document.getElementById('prod-contenido').innerHTML = `
+                    <p class="prod-ruta"><a href="/">Inicio</a> / <a href="/catalogo">Catálogo</a> / <span>${esc(p.nombre)}</span></p>
+                    <div class="prod-grid">
+                        <div>
+                            <div class="prod-imagen"><img id="img-principal" src="/images/${esc(imgs[0] || '')}" alt="${esc(p.nombre)}" onerror="this.style.display='none'"></div>
+                            ${miniaturas}
+                        </div>
+                        <div class="prod-info">
+                            <div class="prod-etiquetas">
+                                <span class="et-cat">${esc(p.categoria)}</span>
+                                <span class="${disp ? 'et-ok' : 'et-ago'}">${disp ? 'Disponible' : 'Agotado'}</span>
+                            </div>
+                            <h1>${esc(p.nombre)}</h1>
+                            ${p.marca ? '<p class="prod-dato"><strong>Marca:</strong> ' + esc(p.marca) + '</p>' : ''}
+                            ${p.referencia ? '<p class="prod-dato"><strong>Ref:</strong> ' + esc(p.referencia) + '</p>' : ''}
+                            <p class="prod-precio">$ ${Number(p.precio).toLocaleString('es-CO')}</p>
+                            <p class="prod-desc">${esc(p.descripcion || '')}</p>
+                            ${disp ? `
+                            <div class="prod-cant">
+                                <span>Cantidad:</span>
+                                <div class="cant-ctl">
+                                    <button type="button" onclick="cambiar(-1)">−</button>
+                                    <strong id="prod-cant">1</strong>
+                                    <button type="button" onclick="cambiar(1)">+</button>
+                                </div>
+                            </div>
+                            <div class="prod-botones">
+                                <button class="pb-rojo" onclick="agregar()">AGREGAR AL CARRITO</button>
+                                <button class="pb-borde" onclick="cotizar()">SOLICITAR COTIZACIÓN</button>
+                            </div>` : `
+                            <div class="prod-botones">
+                                <button class="pb-borde" onclick="cotizar()">SOLICITAR COTIZACIÓN</button>
+                            </div>`}
+                            <button class="pb-wa" onclick="whatsapp()">CONSULTAR POR WHATSAPP</button>
+                        </div>
                     </div>
-                    <div class="detalle-info">
-                        <span class="producto-categoria">${p.categoria}</span>
-                        <h1>${p.nombre}</h1>
-                        <p class="detalle-precio">$${Number(p.precio).toLocaleString('es-CO')}</p>
-                        <p class="detalle-desc">${p.descripcion || ''}</p>
-                        <p class="detalle-stock">Disponibles: ${p.stock} unidades</p>
-                        <a href="/cotizar" class="btn-primary">Cotizar este producto</a>
-                    </div>
-                `;
+                    ${specs ? '<h2 class="prod-sub">Especificaciones técnicas</h2><div class="prod-tabla">' + specs + '</div>' : ''}`;
             })
             .catch(() => {
-                document.getElementById('detalle-contenido').innerHTML =
-                    '<p style="color:#ff0000">Producto no encontrado.</p>';
+                document.getElementById('prod-contenido').innerHTML = '<p style="color:#ff5555">Producto no encontrado. <a href="/catalogo" style="color:#d32f2f">Volver al catálogo</a></p>';
             });
     </script>
+    <script src="/js/carrito-contador.js"></script>
 </body>
 </html>

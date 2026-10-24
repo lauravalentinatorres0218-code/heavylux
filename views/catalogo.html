@@ -3,155 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Catálogo - heavylux</title>
+    <title>Catálogo - HeavyLux</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <!--BARRA SUPERIOR-->
-        <div class="top-bar">
-            <p>ENVIOS A TODO EL META · WHATSAPP +57 313 734 9236 · LUN-SÁB 8AM-6PM</p>
-        </div>
-        <!--NAVEGACIÓN-->
-<nav class="navbar">
-    <div class="logo">
-        <div class="logo-bars">
-            <div class="logo-bar"></div>
-            <div class="logo-bar"></div>
-        </div>
-        <div class="logo-text">
-            <span class="logo-heavy">HEAVY</span>
-            <span class="logo-LUX">LUX</span>
-        </div>
+    <div class="top-bar">
+        <p>ENVIOS A TODO EL META · WHATSAPP +57 313 734 9236 · LUN-SÁB 8AM-6PM</p>
     </div>
-            <ul class="nav-links">
-                <li><a href="/">INICIO</a></li>
-                <li><a href="/catalogo">CATÁLOGO</a></li>
-                <li><a href="/cotizar">COTIZAR</a></li>
-                <li><a href="/nosotros">NOSOTROS</a></li>
-                <li><a href="/contacto">CONTACTO</a></li>
-            </ul>
-            <div class="navbar-actions">
-                <a href="/cuenta" class="navbar-icon">👤 CUENTA</a>
-                <a href="/carrito" class="navbar-icon btn-carrito">🛒 CARRITO</a>
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div></div>
+            <div class="logo-text"><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/">INICIO</a></li>
+            <li><a href="/catalogo">CATÁLOGO</a></li>
+            <li><a href="/cotizar">COTIZAR</a></li>
+            <li><a href="/nosotros">NOSOTROS</a></li>
+            <li><a href="/contacto">CONTACTO</a></li>
+        </ul>
+        <div class="navbar-actions">
+            <a href="/cuenta" class="navbar-icon">👤 CUENTA</a>
+            <a href="/carrito" class="navbar-icon btn-carrito">🛒 CARRITO</a>
+        </div>
+    </nav>
+
+    <section class="catalogo">
+        <div class="catalogo-header">
+            <h1>Catálogo de productos</h1>
+            <p id="contador-resultados">Cargando...</p>
+        </div>
+
+        <div class="catalogo-layout">
+            <aside class="catalogo-lateral">
+                <h4>CATEGORÍAS</h4>
+                <ul id="lista-categorias"></ul>
+                <h4>DISPONIBILIDAD</h4>
+                <label class="chk"><input type="checkbox" id="solo-disponibles"> Solo disponibles</label>
+            </aside>
+
+            <div class="catalogo-principal">
+                <div class="catalogo-barra">
+                    <input type="text" id="buscar-producto" placeholder="Buscar por nombre o descripción...">
+                    <select id="orden">
+                        <option value="">Ordenar por</option>
+                        <option value="menor">Precio: menor a mayor</option>
+                        <option value="mayor">Precio: mayor a menor</option>
+                        <option value="nombre">Nombre (A-Z)</option>
+                    </select>
+                </div>
+                <div class="productos-grid" id="productos-grid">
+                    <p style="color:#aaaaaa">Cargando productos...</p>
+                </div>
             </div>
-        </nav>
-        <!--CATÁLOGO-->
-        <section class="catalogo">
-            <div class="catalogo-header">
-                <h1>Catálogo de productos</h1>
-                <p>Encuentra los repuestos y accesorios para tu vehículo</p>
-            </div>
-            <div class="catalogo-busqueda">
-                <input type="text" id="buscar-producto" placeholder="🔍 Buscar...">
-            </div>
-            <div class="catalogo-filtros">
-                <button class="filtro-btn activo">Todos</button>
-                <button class="filtro-btn">Repuestos</button>
-                <button class="filtro-btn">Iluminación LED</button>
-                <button class="filtro-btn">Lujos y accesorios</button>
-                <button class="filtro-btn">Suspensión</button>
-                <button class="filtro-btn">Dirección</button>
-                <button class="filtro-btn">Transmisión</button>
-            </div>
-            <div class="productos-grid" id="productos-grid">
-                <p style="color: #aaaaaa">Cargando productos...</p>
-            </div>
-        </section>
-        <!--FOOTER-->
-        <footer class="footer">
-            <p><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></p>
-            <p>Acacías, Meta · heavylux@gmail.com</p>
-            <p>© 2026 HeavyLux · Todos los derechos reservados</p> 
-        </footer>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></p>
+        <p>Acacías, Meta · heavylux@gmail.com</p>
+        <p>© 2026 HeavyLux · Todos los derechos reservados</p>
+    </footer>
 
     <script>
-        let todosLosProductos = [];
-        fetch('/api/productos')
-        .then(res => res.json())
-        .then(data => {
-            todosLosProductos = data;
-            const params = new URLSearchParams(window.location.search);
-            const buscar = params.get('buscar');
-            const categoria = params.get('categoria');
+        const CATEGORIAS = ['Repuestos', 'Iluminación LED', 'Lujos y accesorios', 'Suspensión', 'Dirección', 'Transmisión'];
+        let todos = [];
+        let categoriaActiva = 'Todos';
 
-            if (buscar) {
-                document.getElementById('buscar-producto').value = buscar;
-                const q = buscar.toLowerCase();
-                mostrarProductos(data.filter(p =>
-                    p.nombre.toLowerCase().includes(q) ||
-                    p.categoria.toLowerCase().includes(q) ||
-                    (p.descripcion || '').toLowerCase().includes(q)
-                ));
-            } else if (categoria) {
-                mostrarProductos(data.filter(p => p.categoria === categoria));
-                document.querySelectorAll('.filtro-btn').forEach(b => {
-                    b.classList.toggle('activo', b.textContent === categoria);
-                });
-            } else {
-                mostrarProductos(data);
-            }
-        })
-        .catch(err => {
-            document.getElementById('productos-grid').innerHTML = '<p style="color:#ff0000">Error al cargar productos.</p>';
-        })
+        function esc(t) {
+            return String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+
         function agregarAlCarrito(id) {
-            const p = todosLosProductos.find(x => x.id === id);
+            const p = todos.find(x => x.id === id);
             if (!p) return;
             const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
             const existente = carrito.find(x => x.id === id);
-            if (existente) {
-                existente.cantidad = (existente.cantidad || 1) + 1;
-            } else {
-                carrito.push({ id: p.id, nombre: p.nombre, precio: p.precio, cantidad: 1 });
-            }
+            if (existente) existente.cantidad = (existente.cantidad || 1) + 1;
+            else carrito.push({ id: p.id, nombre: p.nombre, precio: p.precio, cantidad: 1 });
             localStorage.setItem('carrito', JSON.stringify(carrito));
+            if (window.actualizarContadorCarrito) actualizarContadorCarrito();
             alert(p.nombre + ' agregado al carrito');
         }
-        function mostrarProductos(productos) {
+
+        function pintarCategorias() {
+            const lista = document.getElementById('lista-categorias');
+            const items = [['Todos', todos.length]].concat(
+                CATEGORIAS.map(c => [c, todos.filter(p => p.categoria === c).length])
+            );
+            lista.innerHTML = items.map(([c, n]) =>
+                '<li><button class="cat-btn' + (c === categoriaActiva ? ' activo' : '') + '" data-cat="' + esc(c) + '">' +
+                '<span>' + esc(c) + '</span><span class="cat-n">' + n + '</span></button></li>'
+            ).join('');
+            lista.querySelectorAll('.cat-btn').forEach(b => b.addEventListener('click', () => {
+                categoriaActiva = b.dataset.cat;
+                pintarCategorias();
+                aplicar();
+            }));
+        }
+
+        function aplicar() {
+            const q = document.getElementById('buscar-producto').value.toLowerCase();
+            const soloDisp = document.getElementById('solo-disponibles').checked;
+            const orden = document.getElementById('orden').value;
+            let res = todos.filter(p =>
+                (categoriaActiva === 'Todos' || p.categoria === categoriaActiva) &&
+                (!soloDisp || p.stock > 0) &&
+                (p.nombre.toLowerCase().includes(q) || (p.descripcion || '').toLowerCase().includes(q) || (p.categoria || '').toLowerCase().includes(q))
+            );
+            if (orden === 'menor') res.sort((a, b) => a.precio - b.precio);
+            if (orden === 'mayor') res.sort((a, b) => b.precio - a.precio);
+            if (orden === 'nombre') res.sort((a, b) => a.nombre.localeCompare(b.nombre));
+            mostrar(res);
+        }
+
+        function mostrar(productos) {
             const grid = document.getElementById('productos-grid');
-            if (productos.length=== 0){
+            document.getElementById('contador-resultados').textContent = productos.length + ' productos encontrados';
+            if (productos.length === 0) {
                 grid.innerHTML = '<p style="color:#aaaaaa">No se encontraron productos.</p>';
-            return;
+                return;
             }
-            grid.innerHTML = productos.map(p => `
+            grid.innerHTML = productos.map(p => {
+                const disp = p.stock > 0;
+                return `
                 <div class="producto-card">
                     <div class="producto-imagen">
-                        <img src="/images/${p.imagen}" alt="${p.nombre}" onerror="this.style.display='none'">                
+                        <span class="etiqueta ${disp ? 'ok' : 'agotado'}">${disp ? 'Disponible' : 'Agotado'}</span>
+                        <span class="etiqueta cat">${esc(p.categoria)}</span>
+                        <img src="/images/${esc(p.imagen)}" alt="${esc(p.nombre)}" onerror="this.style.display='none'">
                     </div>
                     <div class="producto-info">
-                        <span class="producto-categoria">${p.categoria}</span>
-                        <h3>${p.nombre}</h3>
+                        <h3>${esc(p.nombre)}</h3>
                         <p class="producto-precio">$${Number(p.precio).toLocaleString('es-CO')}</p>
                         <div class="producto-botones">
-                        <a href="/producto/${p.id}" class="btn-primary">Ver detalle</a>
-                        <a href="#" class="btn-secondary" onclick="agregarAlCarrito(${p.id}); return false;">+ Carrito</a>
+                            <a href="/producto/${p.id}" class="btn-primary">Ver detalle</a>
+                            <a href="#" class="btn-secondary" onclick="agregarAlCarrito(${p.id}); return false;">+ Carrito</a>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
         }
-        document.getElementById('buscar-producto').addEventListener('input', (e) => {
-        const busqueda = e.target.value.toLowerCase();
-        const filtrados = todosLosProductos.filter(p =>
-            p.nombre.toLowerCase().includes(busqueda) ||
-            p.categoria.toLowerCase().includes(busqueda) ||
-            (p.descripcion || '').toLowerCase().includes(busqueda)        
-        );
-        mostrarProductos(filtrados);
-        });
-        document.querySelectorAll('.filtro-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('activo'));
-        btn.classList.add('activo');
-        const categoria = btn.textContent;
-        if (categoria === 'Todos') {
-            mostrarProductos(todosLosProductos);
-        } else {
-            const filtrados = todosLosProductos.filter(p => p.categoria === categoria);
-            mostrarProductos(filtrados);
-        }
-    });
-});  
+
+        fetch('/api/productos')
+            .then(res => res.json())
+            .then(data => {
+                todos = data;
+                const params = new URLSearchParams(window.location.search);
+                const cat = params.get('categoria');
+                const buscar = params.get('buscar');
+                if (cat && CATEGORIAS.includes(cat)) categoriaActiva = cat;
+                if (buscar) document.getElementById('buscar-producto').value = buscar;
+                pintarCategorias();
+                aplicar();
+            })
+            .catch(() => {
+                document.getElementById('productos-grid').innerHTML = '<p style="color:#ff0000">Error al cargar productos.</p>';
+            });
+
+        document.getElementById('buscar-producto').addEventListener('input', aplicar);
+        document.getElementById('solo-disponibles').addEventListener('change', aplicar);
+        document.getElementById('orden').addEventListener('change', aplicar);
     </script>
-</body>        
+    <script src="/js/carrito-contador.js"></script>
+</body>
 </html>

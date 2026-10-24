@@ -3,120 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HeavyLux - Repuestos e Iluminación</title>
+    <title>HeavyLux - Repuestos e Iluminación para carga pesada</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-   <!--BARRA SUPERIOR-->
-   <div class="top-bar">
-      <p>ENVIOS A TODO EL META · WHATSAPP +57 313 734 9236 · LUN-SÁB 8AM-6PM </p>
-   </div>
-   <!--NAVEGACIÓN-->
-   <nav class="navbar">
-      <div class="logo">
-         <div class="logo-bars">
-            <div class="logo-bar"></div>
-            <div class="logo-bar"></div>
-         </div>
-         <div class="logo-text">
-            <span class="logo-heavy">HEAVY</span>
-            <span class="logo-LUX">LUX</span>
-         </div>
-      </div>
-      <ul class="nav-links">
-            <li><a href="/">INICIO</a></li>
+    <div class="top-bar"><p>ENVIOS A TODO EL META · WHATSAPP +57 313 734 9236 · LUN-SÁB 8AM-6PM</p></div>
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div></div>
+            <div class="logo-text"><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/" class="activo">INICIO</a></li>
             <li><a href="/catalogo">CATÁLOGO</a></li>
             <li><a href="/cotizar">COTIZAR</a></li>
             <li><a href="/nosotros">NOSOTROS</a></li>
             <li><a href="/contacto">CONTACTO</a></li>
-      </ul>
-      <div class="navbar-actions">
+        </ul>
+        <div class="navbar-actions">
             <a href="/cuenta" class="navbar-icon">👤 CUENTA</a>
             <a href="/carrito" class="navbar-icon btn-carrito">🛒 CARRITO</a>
-      </div>
-   </nav>
-   <!--HERO-->
-   <section class="hero">
-      <div class="hero-content">
-         <p class="hero-sub">Acacías, Meta · Colombia</p>
-         <h1>Repuestos e iluminación para tu<span> vehículo</span></h1>
-         <p>Cotiza en línea y recibe en tu municipio.</p>
-         <div class="hero-buttons">
-            <a href="/catalogo" class="btn-primary">Ver catálogo</a>
-            <a href="/cotizar" class="btn-secondary">Cotizar ahora</a>
-         </div>
-      </div>
-      <div class="hero-search">
-         <input type="text" id="hero-buscar" placeholder="Buscar repuesto, marca, referencia...">
-         <button onclick="buscarProducto()">🔍 BUSCAR</button>
-      </div>
-      <div class="hero-tags">
-         <span onclick="irACatalogo('Repuestos')">Filtros Volvo</span>
-         <span onclick="irACatalogo('Iluminación LED')">LED 48"</span>
-         <span onclick="irACatalogo('Repuestos')">Frenos Scania</span>
-         <span onclick="irACatalogo('Repuestos')">Turbo Cummins</span>
-      </div>
-      </section>
-   <!--ESTADISTICAS-->
-   <section class="stats-bar">
-      <div class="stat-item">
-         <h3>3,500+</h3>
-         <p>Repuestos</p>
-      </div>
-      <div class="stat-item">
-         <h3>12+</h3>
-         <p>Marcas certificadas</p>
-      </div>
-      <div class="stat-item">
-         <h3>48h</h3>
-         <p>Envío express</p>
-      </div>
-      <div class="stat-item">
-         <h3>5 años</h3>
-         <p>Garantía de fábrica</p>
-      </div>
-   </section>
-   <!--CATEGORIAS-->
-   <section class="categorias">
-      <h2>Categorías principales</h2>
-      <div class="categorias-grid">
-         <a href="/catalogo?categoria=Repuestos" class="categoria-card"><h3>Repuestos</h3></a>
-         <a href="/catalogo?categoria=Iluminación LED" class="categoria-card"><h3>Iluminación LED</h3></a>
-         <a href="/catalogo?categoria=Lujos y accesorios" class="categoria-card"><h3>Lujos y accesorios</h3></a>
-         <a href="/catalogo?categoria=Suspensión" class="categoria-card"><h3>Suspensión</h3></a>
-         <a href="/catalogo?categoria=Dirección" class="categoria-card"><h3>Dirección</h3></a>
-         <a href="/catalogo?categoria=Transmisión" class="categoria-card"><h3>Transmisión</h3></a>
-      </div>
-   </section>
-   <!-- FOOTER -->
-   <footer class="footer">
-   <div class="logo" style="justify-content:center; margin-bottom:10px;">
-      <div class="logo-bars">
-        <div class="logo-bar"></div>
-        <div class="logo-bar"></div>
-      </div>
-      <div class="logo-text">
-        <span class="logo-heavy">HEAVY</span>
-        <span class="logo-lux">LUX</span>
-      </div>
-   </div>      
-      <p>Acacías, Meta · heavylux@gmail.com</p>
-      <p>© 2026 HeavyLux · Todos los derechos reservados</p>
-   </footer>
+        </div>
+    </nav>
 
-   <script>
-      function buscarProducto() {
-         const busqueda = document.getElementById('hero-buscar').value;
-         window.location.href = '/catalogo?buscar=' + busqueda;
-         }
+    <section class="hero">
+        <div class="hero-content">
+            <p class="hero-sub">Acacías, Meta · Colombia</p>
+            <h1>Tu camión no para.<span> Nosotros tampoco</span></h1>
+            <p>Repuestos originales, iluminación LED de alta potencia</p>
+        </div>
+        <form class="hero-search" id="form-buscar">
+            <input type="text" id="hero-buscar" placeholder="Buscar repuesto, categoría...">
+            <button type="submit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg><span>BUSCAR</span></button>
+        </form>
+        <div class="hero-tags">
+            <span onclick="location.href='/catalogo?buscar=filtro'">Filtros</span>
+            <span onclick="location.href='/catalogo?categoria=Iluminación LED'">Iluminación LED</span>
+            <span onclick="location.href='/catalogo?categoria=Suspensión'">Suspensión</span>
+            <span onclick="location.href='/catalogo?categoria=Repuestos'">Repuestos</span>
+        </div>
+    </section>
 
-      function irACatalogo(categoria) {
-         window.location.href = '/catalogo?categoria=' + categoria;
-         }
+    <section class="stats-bar">
+        <div class="stat-item"><h3 id="stat-productos">0</h3><p>Productos en catálogo</p></div>
+        <div class="stat-item"><h3 id="stat-categorias">0</h3><p>Categorías</p></div>
+        <div class="stat-item"><h3>Meta</h3><p>Envíos en la región</p></div>
+        <div class="stat-item"><h3>L–S</h3><p>Atención de lunes a sábado</p></div>
+    </section>
 
-      document.getElementById('hero-buscar').addEventListener('keypress', (e) => {
-         if (e.key === 'Enter') buscarProducto();
-      });
-   </script>
+    <section class="categorias">
+        <h2>Categorías principales</h2>
+        <div class="categorias-grid">
+            <a href="/catalogo?categoria=Repuestos" class="categoria-card"><h3>Repuestos</h3></a>
+            <a href="/catalogo?categoria=Iluminación LED" class="categoria-card"><h3>Iluminación LED</h3></a>
+            <a href="/catalogo?categoria=Lujos y accesorios" class="categoria-card"><h3>Lujos y accesorios</h3></a>
+            <a href="/catalogo?categoria=Suspensión" class="categoria-card"><h3>Suspensión</h3></a>
+            <a href="/catalogo?categoria=Dirección" class="categoria-card"><h3>Dirección</h3></a>
+            <a href="/catalogo?categoria=Transmisión" class="categoria-card"><h3>Transmisión</h3></a>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></p>
+        <p>Acacías, Meta · heavylux@gmail.com</p>
+        <p>© 2026 HeavyLux · Todos los derechos reservados</p>
+    </footer>
+
+    <script>
+        document.getElementById('form-buscar').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const q = document.getElementById('hero-buscar').value.trim();
+            window.location.href = '/catalogo' + (q ? '?buscar=' + encodeURIComponent(q) : '');
+        });
+        fetch('/api/productos').then(r => r.json()).then(d => {
+            document.getElementById('stat-productos').textContent = d.length;
+            document.getElementById('stat-categorias').textContent = new Set(d.map(p => p.categoria)).size;
+        });
+    </script>
+    <script src="/js/carrito-contador.js"></script>
 </body>
 </html>

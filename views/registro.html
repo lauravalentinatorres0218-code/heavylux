@@ -7,43 +7,59 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-box">
-            <div class="logo" style="justify-content:center; margin-bottom:15px;">
-                <div class="logo-bars">
-                    <div class="logo-bar"></div>
-                    <div class="logo-bar"></div>
-                </div>
-                <div class="logo-text">
-                    <span class="logo-heavy">HEAVY</span>
-                    <span class="logo-lux">LUX</span>
-                </div>
-            </div>
-            <h2>Crear cuenta</h2>
-            <p class="login-sub">Regístrate para comprar y seguir tus pedidos</p>
-            <form class="login-form" action="/registro" method="POST">
-                <div class="form-group">
-                    <label>Nombre completo</label>
-                    <input type="text" name="nombre" required>
-                </div>
-                <div class="form-group">
-                    <label>Teléfono</label>
-                    <input type="tel" name="telefono">
-                </div>
-                <div class="form-group">
-                    <label>Correo electrónico</label>
-                    <input type="email" name="correo" required>
-                </div>
-                <div class="form-group">
-                    <label>Contraseña (mínimo 6 caracteres)</label>
-                    <input type="password" name="password" minlength="6" required>
-                </div>
-                <div id="error-registro" style="color:#CC0000; font-size:13px; margin-bottom:10px;"></div>
-                <button type="submit" class="btn-submit">Crear cuenta</button>
-            </form>
-            <p style="margin-top:20px; font-size:13px; color:#aaaaaa;">¿Ya tienes cuenta? <a href="/login" style="color:#CC0000;">Inicia sesión</a></p>
+    <div class="top-bar"><p>ENVÍOS A TODO EL META · WHATSAPP +57 313 734 9236 · LUN-SÁB 8AM-6PM</p></div>
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div></div>
+            <div class="logo-text"><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></div>
         </div>
-    </div>
+        <ul class="nav-links">
+            <li><a href="/">INICIO</a></li>
+            <li><a href="/catalogo">CATÁLOGO</a></li>
+            <li><a href="/cotizar">COTIZAR</a></li>
+            <li><a href="/nosotros">NOSOTROS</a></li>
+            <li><a href="/contacto">CONTACTO</a></li>
+        </ul>
+        <div class="navbar-actions">
+            <a href="/cuenta" class="navbar-icon">👤 CUENTA</a>
+            <a href="/carrito" class="navbar-icon btn-carrito">🛒 CARRITO</a>
+        </div>
+    </nav>
+
+    <section class="acceso">
+        <div class="acceso-izq">
+            <div class="acceso-marca">
+                <div class="logo">
+                    <div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div></div>
+                    <div class="logo-text"><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></div>
+                </div>
+                <h2>Luz para la noche, <span style="color:#d32f2f">fuerza para el camino.</span></h2>                <p>Crea tu cuenta para comprar, pagar y seguir tus pedidos.</p>
+            </div>
+        </div>
+        <div class="acceso-der">
+            <div class="acceso-tabs">
+                <a href="/login" class="tab">INICIAR SESIÓN</a>
+                <a href="/registro" class="tab activo">CREAR CUENTA</a>
+            </div>
+            <h1>Crea tu cuenta</h1>
+            <p class="acceso-sub">Regístrate para comprar y seguir tus pedidos.</p>
+
+            <form class="acceso-form" action="/registro" method="POST">
+                <label>NOMBRE COMPLETO</label>
+                <input type="text" name="nombre" placeholder="Escribe tu nombre" required>
+                <label>TELÉFONO</label>
+                <input type="tel" name="telefono" placeholder="Número de contacto">
+                <label>CORREO ELECTRÓNICO</label>
+                <input type="email" name="correo" placeholder="tucorreo@gmail.com" required>
+                <label>CONTRASEÑA (MÍNIMO 6 CARACTERES)</label>
+                <input type="password" name="password" minlength="6" placeholder="Escribe tu contraseña" required>
+                <div id="error-registro" class="msg-error"></div>
+                <button type="submit" class="acceso-btn">CREAR CUENTA</button>
+            </form>
+            <p class="acceso-volver"><a href="/"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="20" y1="12" x2="4" y2="12"/><polyline points="10 6 4 12 10 18"/></svg><span>Volver al inicio</span></a></p>
+        </div>
+    </section>
+
     <script>
         const e = new URLSearchParams(window.location.search).get('error');
         if (e) {
