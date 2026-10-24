@@ -14,7 +14,56 @@
             <div class="logo-text"><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></div>
         </div>
         <h2 id="titulo-metodo">Pago</h2>
-        <form id="form-pago" class="pasarela-form"></form>
+        <form id="form-pago" class="pasarela-form" novalidate>
+
+            <div id="bloque-tarjeta" style="display:none">
+                <h3 class="sub">Datos de la tarjeta</h3>
+                <div class="grupo">
+                    <input placeholder="1234 5678 9012 3456" maxlength="19" inputmode="numeric">
+                    <div class="fila">
+                        <input placeholder="Mes / Año" maxlength="5">
+                        <input placeholder="CVV" maxlength="4" inputmode="numeric">
+                    </div>
+                </div>
+                <h3 class="sub">Datos del propietario</h3>
+                <div class="grupo">
+                    <div class="fila">
+                        <input placeholder="Nombre">
+                        <input placeholder="Apellido">
+                    </div>
+                    <div class="fila">
+                        <select><option>CC</option><option>CE</option><option>NIT</option><option>Pasaporte</option></select>
+                        <input placeholder="Cédula de ciudadanía">
+                    </div>
+                    <input placeholder="Número de celular" inputmode="numeric">
+                </div>
+            </div>
+
+            <div id="bloque-pse" style="display:none">
+                <h3 class="sub">Complete la información</h3>
+                <div class="grupo">
+                    <div class="fila">
+                        <select><option value="">Tipo de persona</option><option>Natural</option><option>Jurídica</option></select>
+                        <select><option value="">Seleccione su banco</option><option>Bancolombia</option><option>Banco de Bogotá</option><option>Davivienda</option><option>BBVA Colombia</option><option>Banco Popular</option><option>Banco de Occidente</option><option>Banco AV Villas</option><option>Banco Agrario</option><option>Scotiabank Colpatria</option><option>Nequi</option><option>Daviplata</option></select>
+                    </div>
+                </div>
+                <h3 class="sub">Datos del propietario</h3>
+                <div class="grupo">
+                    <input placeholder="Nombre">
+                    <div class="fila">
+                        <select><option>CC</option><option>CE</option><option>NIT</option><option>Pasaporte</option></select>
+                        <input placeholder="Número de documento">
+                    </div>
+                    <input placeholder="Número de celular" inputmode="numeric">
+                </div>
+            </div>
+
+            <div class="botones">
+                <a href="/checkout" class="btn-atras"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="20" y1="12" x2="4" y2="12"/><polyline points="10 6 4 12 10 18"/></svg><span>Atrás</span></a>
+                <button type="submit" class="btn-pagar" id="btn-pagar">Pagar</button>
+            </div>
+            <p class="legal">Al continuar acepto las políticas aplicables para el tratamiento de mis datos personales.</p>
+        </form>
         <p style="margin-top:20px"><a href="/catalogo" style="color:#888">No deseo continuar</a></p>
     </div>
     <div class="pasarela-der">
@@ -22,8 +71,11 @@
         <h1 id="p-total">$0</h1>
         <div class="pasarela-detalle">
             <p><span>Referencia</span><strong id="p-ref"></strong></p>
+            <p><span>Fecha de solicitud</span><strong id="p-fecha"></strong></p>
+            <p><span>IVA (19%)</span><strong id="p-iva"></strong></p>
             <p><span>Método</span><strong id="p-metodo"></strong></p>
         </div>
+        <p class="expira">⏱ El proceso expira en 10 minutos</p>
     </div>
 </div>
 
@@ -40,24 +92,44 @@
 <script>
     const id = window.location.pathname.split('/').pop();
     let pedido = null;
-    const campos = {
-        Tarjeta: '<input placeholder="Número de tarjeta (simulado)" maxlength="19" required><div class="fila"><input placeholder="MM / AA" maxlength="5" required><input placeholder="CVV" maxlength="4" required></div><input placeholder="Nombre del titular" required><input placeholder="Cédula" required>',
-        PSE: '<select required><option value="">Tipo de persona</option><option>Natural</option><option>Jurídica</option></select><select required><option value="">Seleccione su banco</option><option>Banco de ejemplo A</option><option>Banco de ejemplo B</option></select><input placeholder="Nombre" required><input placeholder="Cédula" required><input placeholder="Celular" required>',
-        Nequi: '<input placeholder="Celular Nequi" required><input placeholder="Código de verificación (cualquier número)" required>'
-    };
     fetch('/api/pedidos/' + id).then(r => r.json()).then(p => {
         if (p.error) { document.body.innerHTML = '<p style="padding:40px">Pedido no encontrado.</p>'; return; }
         pedido = p;
         const total = '$' + Number(p.total).toLocaleString('es-CO');
+        const esTarjeta = p.metodo_pago === 'Tarjeta';
+        document.getElementById('bloque-tarjeta').style.display = esTarjeta ? 'flex' : 'none';
+        document.getElementById('bloque-pse').style.display = esTarjeta ? 'none' : 'flex';
+        document.getElementById('titulo-metodo').textContent = esTarjeta ? 'Tarjeta de Crédito / Débito / Prepago' : 'Cuentas débito ahorro y corriente (PSE)';
+        document.getElementById('p-metodo').textContent = esTarjeta ? 'Tarjeta' : 'PSE';
         document.getElementById('p-total').textContent = total;
         document.getElementById('p-ref').textContent = p.id;
-        document.getElementById('p-metodo').textContent = p.metodo_pago;
-        document.getElementById('titulo-metodo').textContent = 'Pago con ' + p.metodo_pago;
-        document.getElementById('form-pago').innerHTML = (campos[p.metodo_pago] || '') +
-            '<button type="submit" class="btn-pagar">Pagar ' + total + '</button>';
+        document.getElementById('p-fecha').textContent = new Date().toLocaleString('es-CO');
+        document.getElementById('p-iva').textContent = '$' + Math.round(Number(p.total) - Number(p.total) / 1.19).toLocaleString('es-CO');
+        document.getElementById('btn-pagar').textContent = 'Pagar ' + total;
     });
     document.getElementById('form-pago').addEventListener('submit', (e) => {
         e.preventDefault();
+        const form = e.target;
+        let valido = true;
+        form.querySelectorAll('input, select').forEach(c => {
+            const bloque = c.closest('#bloque-tarjeta, #bloque-pse');
+            const visible = bloque && bloque.style.display !== 'none';
+            const vacio = visible && !c.value.trim();
+            c.classList.toggle('error', vacio);
+            if (vacio) valido = false;
+        });
+        let msg = document.getElementById('msg-error');
+        if (!valido) {
+            if (!msg) {
+                msg = document.createElement('p');
+                msg.id = 'msg-error';
+                msg.className = 'msg-error';
+                form.insertBefore(msg, form.querySelector('.botones'));
+            }
+            msg.textContent = 'Completa todos los campos para continuar.';
+            return;
+        }
+        if (msg) msg.remove();
         fetch('/api/pedidos/' + id + '/pagar', { method: 'POST' }).then(r => r.json()).then(d => {
             if (d.error) { alert(d.error); return; }
             document.getElementById('m-ref').textContent = 'ID de la transacción: ' + d.referencia;
