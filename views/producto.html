@@ -65,8 +65,9 @@
         function whatsapp() {
             window.open('https://wa.me/573137349236?text=' + encodeURIComponent('Hola HeavyLux, quiero información de: ' + producto.nombre), '_blank');
         }
-        function verImagen(src, el) {
-            document.getElementById('img-principal').src = '/images/' + src;
+        function verImagen(i, el) {
+            const lista = [producto.imagen, producto.imagen2, producto.imagen3].filter(x => x && x.trim());
+            document.getElementById('img-principal').src = '/images/' + encodeURIComponent(lista[i]);
             document.querySelectorAll('.miniatura').forEach(m => m.classList.remove('activa'));
             el.classList.add('activa');
         }
@@ -79,7 +80,7 @@
                 const disp = p.stock > 0;
                 const imgs = [p.imagen, p.imagen2, p.imagen3].filter(x => x && x.trim());
                 const miniaturas = imgs.length > 1 ? '<div class="prod-miniaturas">' + imgs.map((im, i) =>
-                    '<div class="miniatura' + (i === 0 ? ' activa' : '') + '" onclick="verImagen(\'' + esc(im) + '\', this)"><img src="/images/' + esc(im) + '" onerror="this.style.display=\'none\'"></div>'
+                    '<div class="miniatura' + (i === 0 ? ' activa' : '') + '" onclick="verImagen(' + i + ', this)"><img src="/images/' + encodeURIComponent(im) + '" onerror="this.style.display=\'none\'"></div>'
                 ).join('') + '</div>' : '';
                 const specs = (p.especificaciones || '').split('\n').filter(l => l.includes(':')).map(l => {
                     const i = l.indexOf(':');
@@ -88,8 +89,8 @@
                 document.getElementById('prod-contenido').innerHTML = `
                     <p class="prod-ruta"><a href="/">Inicio</a> / <a href="/catalogo">Catálogo</a> / <span>${esc(p.nombre)}</span></p>
                     <div class="prod-grid">
-                        <div>
-                            <div class="prod-imagen"><img id="img-principal" src="/images/${esc(imgs[0] || '')}" alt="${esc(p.nombre)}" onerror="this.style.display='none'"></div>
+                        <div><img id="img-principal" src="/images/${encodeURIComponent(imgs[0] || '')}" alt="${esc(p.nombre)}" onerror="this.style.display='none'">
+                            <div class="prod-imagen"></div>
                             ${miniaturas}
                         </div>
                         <div class="prod-info">

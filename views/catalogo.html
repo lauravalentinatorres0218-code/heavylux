@@ -131,7 +131,7 @@
                     <div class="producto-imagen">
                         <span class="etiqueta ${disp ? 'ok' : 'agotado'}">${disp ? 'Disponible' : 'Agotado'}</span>
                         <span class="etiqueta cat">${esc(p.categoria)}</span>
-                        <img src="/images/${esc(p.imagen)}" alt="${esc(p.nombre)}" onerror="this.style.display='none'">
+                        <img src="/images/${encodeURIComponent(p.imagen)}" alt="${esc(p.nombre)}" onerror="this.style.display='none'">
                     </div>
                     <div class="producto-info">
                         <h3>${esc(p.nombre)}</h3>
