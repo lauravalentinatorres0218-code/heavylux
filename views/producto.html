@@ -62,15 +62,6 @@
         function cotizar() {
             window.location.href = '/cotizar?productos=' + encodeURIComponent(producto.nombre + ' x' + cantidad);
         }
-        function whatsapp() {
-            window.open('https://wa.me/573137349236?text=' + encodeURIComponent('Hola HeavyLux, quiero información de: ' + producto.nombre), '_blank');
-        }
-        function verImagen(i, el) {
-            const lista = [producto.imagen, producto.imagen2, producto.imagen3].filter(x => x && x.trim());
-            document.getElementById('img-principal').src = '/images/' + encodeURIComponent(lista[i]);
-            document.querySelectorAll('.miniatura').forEach(m => m.classList.remove('activa'));
-            el.classList.add('activa');
-        }
 
         fetch('/api/productos/' + id)
             .then(r => { if (!r.ok) throw new Error(); return r.json(); })
@@ -78,20 +69,16 @@
                 producto = p;
                 document.title = p.nombre + ' - HeavyLux';
                 const disp = p.stock > 0;
-                const imgs = [p.imagen, p.imagen2, p.imagen3].filter(x => x && x.trim());
-                const miniaturas = imgs.length > 1 ? '<div class="prod-miniaturas">' + imgs.map((im, i) =>
-                    '<div class="miniatura' + (i === 0 ? ' activa' : '') + '" onclick="verImagen(' + i + ', this)"><img src="/images/' + encodeURIComponent(im) + '" onerror="this.style.display=\'none\'"></div>'
-                ).join('') + '</div>' : '';
                 const specs = (p.especificaciones || '').split('\n').filter(l => l.includes(':')).map(l => {
                     const i = l.indexOf(':');
                     return '<div><span>' + esc(l.slice(0, i).trim()) + '</span><strong>' + esc(l.slice(i + 1).trim()) + '</strong></div>';
                 }).join('');
+                const etiquetaMarca = p.marca === 'Universal' ? 'Compatibilidad' : 'Marca';
                 document.getElementById('prod-contenido').innerHTML = `
                     <p class="prod-ruta"><a href="/">Inicio</a> / <a href="/catalogo">Catálogo</a> / <span>${esc(p.nombre)}</span></p>
-                    <div class="prod-grid">
-                        <div><img id="img-principal" src="/images/${encodeURIComponent(imgs[0] || '')}" alt="${esc(p.nombre)}" onerror="this.style.display='none'">
-                            <div class="prod-imagen"></div>
-                            ${miniaturas}
+                    <div class="prod-grid" style="display:grid;grid-template-columns:480px minmax(0,1fr);gap:50px;align-items:start;">
+                        <div>
+                            <div class="prod-imagen" style="width:480px;max-width:100%;height:400px;background:#fff;border:1px solid #2a2a2a;overflow:hidden;display:flex;align-items:center;justify-content:center;"><img id="img-principal" src="/images/${encodeURIComponent(p.imagen || '')}" alt="${esc(p.nombre)}" style="width:100%;height:100%;object-fit:contain;display:block;" onerror="this.style.display='none'"></div>
                         </div>
                         <div class="prod-info">
                             <div class="prod-etiquetas">
@@ -99,7 +86,7 @@
                                 <span class="${disp ? 'et-ok' : 'et-ago'}">${disp ? 'Disponible' : 'Agotado'}</span>
                             </div>
                             <h1>${esc(p.nombre)}</h1>
-                            ${p.marca ? '<p class="prod-dato"><strong>Marca:</strong> ' + esc(p.marca) + '</p>' : ''}
+                            ${p.marca ? '<p class="prod-dato"><strong>' + etiquetaMarca + ':</strong> ' + esc(p.marca) + '</p>' : ''}
                             ${p.referencia ? '<p class="prod-dato"><strong>Ref:</strong> ' + esc(p.referencia) + '</p>' : ''}
                             <p class="prod-precio">$ ${Number(p.precio).toLocaleString('es-CO')}</p>
                             <p class="prod-desc">${esc(p.descripcion || '')}</p>
@@ -119,7 +106,6 @@
                             <div class="prod-botones">
                                 <button class="pb-borde" onclick="cotizar()">SOLICITAR COTIZACIÓN</button>
                             </div>`}
-                            <button class="pb-wa" onclick="whatsapp()">CONSULTAR POR WHATSAPP</button>
                         </div>
                     </div>
                     ${specs ? '<h2 class="prod-sub">Especificaciones técnicas</h2><div class="prod-tabla">' + specs + '</div>' : ''}`;
