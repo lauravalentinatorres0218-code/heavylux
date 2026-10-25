@@ -443,3 +443,26 @@ html { scroll-behavior: smooth; }
     .catalogo .productos-grid { grid-template-columns: minmax(0, 1fr); }
     .top-bar { padding: 8px 12px; }
 }
+@media (max-width: 640px) {
+    .carrito-item {
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+            "nombre quitar"
+            "cant   precio";
+        gap: 10px 12px;
+        align-items: center;
+    }
+    .carrito-item > span:nth-child(1) { grid-area: nombre; }
+    .carrito-item > span:nth-child(2) { grid-area: cant; justify-content: flex-start; }
+    .carrito-item > span:nth-child(3) { grid-area: precio; text-align: right; }
+    .carrito-item > button:last-child { grid-area: quitar; justify-self: end; }
+
+    #carrito-contenido .btn-primary,
+    #carrito-contenido .btn-secondary {
+        display: block;
+        text-align: center;
+        width: 100%;
+        margin: 0 0 12px 0;
+    }
+    .carrito-total { margin: 20px 0 16px; }
+}
