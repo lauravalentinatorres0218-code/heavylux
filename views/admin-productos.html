@@ -11,10 +11,7 @@
 <nav class="navbar">
     <div class="logo">
         <div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div></div>
-        <div class="logo-text">
-            <span class="logo-heavy">HEAVY</span>
-            <span class="logo-lux">LUX</span>
-        </div>
+        <div class="logo-text"><span class="logo-heavy">HEAVY</span><span class="logo-lux">LUX</span></div>
     </div>
     <ul class="nav-links">
         <li><a href="/admin">INICIO</a></li>
@@ -31,34 +28,20 @@
     <div class="admin-seccion">
         <table class="admin-tabla">
             <thead>
-                <tr>
-                    <th>ID</th><th>Nombre</th><th>Marca</th><th>Precio</th><th>Categoría</th><th>Stock</th><th>Acción</th>
-                </tr>
+                <tr><th>ID</th><th>Foto</th><th>Nombre</th><th>Marca</th><th>Precio</th><th>Categoría</th><th>Stock</th><th>Acción</th></tr>
             </thead>
             <tbody id="productos-tbody">
-                <tr><td colspan="7">Cargando productos...</td></tr>
+                <tr><td colspan="8">Cargando productos...</td></tr>
             </tbody>
         </table>
     </div>
-    <div class="admin-seccion">
-        <h2>Agregar producto</h2>
+    <div class="admin-seccion" id="seccion-form">
+        <h2 id="titulo-form">Agregar producto</h2>
         <form class="cotizar-form" id="form-producto">
-            <div class="form-group">
-                <label>Nombre</label>
-                <input type="text" id="prod-nombre" placeholder="Nombre del producto" required>
-            </div>
-            <div class="form-group">
-                <label>Descripción</label>
-                <textarea id="prod-descripcion" placeholder="Descripción" rows="3"></textarea>
-            </div>
-            <div class="form-group">
-                <label>Precio</label>
-                <input type="number" id="prod-precio" placeholder="Precio en pesos" required>
-            </div>
-            <div class="form-group">
-                <label>Stock</label>
-                <input type="number" id="prod-stock" placeholder="Cantidad disponible" required>
-            </div>
+            <div class="form-group"><label>Nombre</label><input type="text" id="prod-nombre" required></div>
+            <div class="form-group"><label>Descripción</label><textarea id="prod-descripcion" rows="3"></textarea></div>
+            <div class="form-group"><label>Precio</label><input type="number" id="prod-precio" required></div>
+            <div class="form-group"><label>Stock</label><input type="number" id="prod-stock" required></div>
             <div class="form-group">
                 <label>Categoría</label>
                 <select id="prod-categoria">
@@ -70,31 +53,16 @@
                     <option>Transmisión</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label>Marca</label>
-                <input type="text" id="prod-marca" placeholder="Ej: HeavyLux">
+            <div class="form-group"><label>Marca</label><input type="text" id="prod-marca"></div>
+            <div class="form-group"><label>Referencia</label><input type="text" id="prod-referencia"></div>
+            <div class="form-group"><label>Especificaciones (una por línea, formato Clave: Valor)</label><textarea id="prod-especificaciones" rows="5"></textarea></div>
+            <div class="form-group"><label>Imagen (nombre del archivo)</label><input type="text" id="prod-imagen"></div>
+            <div class="form-group"><label>Imagen 2 (opcional)</label><input type="text" id="prod-imagen2"></div>
+            <div class="form-group"><label>Imagen 3 (opcional)</label><input type="text" id="prod-imagen3"></div>
+            <div style="display:flex;gap:12px;">
+                <button type="submit" class="btn-submit" id="btn-guardar">Agregar producto</button>
+                <button type="button" class="btn-submit" id="btn-cancelar" style="display:none;background:#333;" onclick="cancelarEdicion()">Cancelar</button>
             </div>
-            <div class="form-group">
-                <label>Referencia</label>
-                <input type="text" id="prod-referencia" placeholder="Ej: HLX-LED-48P">
-            </div>
-            <div class="form-group">
-                <label>Especificaciones (una por línea, formato Clave: Valor)</label>
-                <textarea id="prod-especificaciones" rows="5" placeholder="Potencia: 240W&#10;Voltaje: 10-30V DC"></textarea>
-            </div>
-            <div class="form-group">
-                <label>Imagen</label>
-                <input type="text" id="prod-imagen" placeholder="nombre-imagen.jpg">
-            </div>
-            <div class="form-group">
-                <label>Imagen 2 (opcional)</label>
-                <input type="text" id="prod-imagen2" placeholder="nombre-imagen-2.jpg">
-            </div>
-            <div class="form-group">
-                <label>Imagen 3 (opcional)</label>
-                <input type="text" id="prod-imagen3" placeholder="nombre-imagen-3.jpg">
-            </div>
-            <button type="submit" class="btn-submit">Agregar producto</button>
         </form>
     </div>
 </section>
@@ -103,6 +71,9 @@
     <p>© 2026 HeavyLux · Panel Administrativo</p>
 </footer>
 <script>
+    let productos = [];
+    let editandoId = null;
+
     function esc(t) {
         return String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     }
@@ -110,26 +81,56 @@
         fetch('/api/productos')
             .then(res => res.json())
             .then(data => {
+                productos = data;
                 const tbody = document.getElementById('productos-tbody');
                 if (data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7">No hay productos.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="8">No hay productos.</td></tr>';
                     return;
                 }
                 tbody.innerHTML = data.map(p => `
                     <tr>
                         <td>${p.id}</td>
+                        <td><img src="/images/${encodeURIComponent(p.imagen || '')}" class="mini" onerror="this.style.visibility='hidden'"></td>
                         <td>${esc(p.nombre)}</td>
                         <td>${esc(p.marca || '-')}</td>
                         <td>$${Number(p.precio).toLocaleString('es-CO')}</td>
                         <td>${esc(p.categoria)}</td>
                         <td>${p.stock}</td>
                         <td>
+                            <button onclick="editarProducto(${p.id})" style="background:#333; color:#fff; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;">Editar</button>
                             <button onclick="eliminarProducto(${p.id})" style="background:#CC0000; color:#fff; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;">Eliminar</button>
                         </td>
                     </tr>
                 `).join('');
             })
             .catch(err => console.error('Error:', err));
+    }
+    function editarProducto(id) {
+        const p = productos.find(x => x.id === id);
+        if (!p) return;
+        editandoId = id;
+        document.getElementById('prod-nombre').value = p.nombre || '';
+        document.getElementById('prod-descripcion').value = p.descripcion || '';
+        document.getElementById('prod-precio').value = p.precio;
+        document.getElementById('prod-stock').value = p.stock;
+        document.getElementById('prod-categoria').value = p.categoria;
+        document.getElementById('prod-marca').value = p.marca || '';
+        document.getElementById('prod-referencia').value = p.referencia || '';
+        document.getElementById('prod-especificaciones').value = p.especificaciones || '';
+        document.getElementById('prod-imagen').value = p.imagen || '';
+        document.getElementById('prod-imagen2').value = p.imagen2 || '';
+        document.getElementById('prod-imagen3').value = p.imagen3 || '';
+        document.getElementById('titulo-form').textContent = 'Editar producto #' + id;
+        document.getElementById('btn-guardar').textContent = 'Guardar cambios';
+        document.getElementById('btn-cancelar').style.display = 'inline-block';
+        document.getElementById('seccion-form').scrollIntoView({ behavior: 'smooth' });
+    }
+    function cancelarEdicion() {
+        editandoId = null;
+        document.getElementById('form-producto').reset();
+        document.getElementById('titulo-form').textContent = 'Agregar producto';
+        document.getElementById('btn-guardar').textContent = 'Agregar producto';
+        document.getElementById('btn-cancelar').style.display = 'none';
     }
     function eliminarProducto(id) {
         if (confirm('¿Seguro que quieres eliminar este producto?')) {
@@ -154,21 +155,24 @@
             imagen2: document.getElementById('prod-imagen2').value,
             imagen3: document.getElementById('prod-imagen3').value
         };
-        fetch('/api/productos', {
-            method: 'POST',
+        const url = editandoId ? '/api/productos/' + editandoId : '/api/productos';
+        const metodo = editandoId ? 'PUT' : 'POST';
+        fetch(url, {
+            method: metodo,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(producto)
         })
         .then(res => res.json())
         .then(d => {
             if (d.error) { alert(d.error); return; }
-            alert('Producto agregado exitosamente');
-            e.target.reset();
+            alert(editandoId ? 'Producto actualizado' : 'Producto agregado exitosamente');
+            cancelarEdicion();
             cargarProductos();
         })
         .catch(err => console.error('Error:', err));
     });
     cargarProductos();
 </script>
+<script src="/js/carrito-contador.js"></script>
 </body>
 </html>

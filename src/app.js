@@ -342,4 +342,15 @@ app.post('/api/pedidos/:id/pagar', verificarSesion, (req, res) => {
         res.json({ referencia: req.params.id, fecha: new Date() });
     });
 });
+app.put('/api/productos/:id', soloAdmin, (req, res) => {
+    const { nombre, descripcion, precio, stock, categoria, imagen, marca, referencia, especificaciones, imagen2, imagen3 } = req.body;
+    const sql = `UPDATE productos SET nombre=?, descripcion=?, precio=?, stock=?, categoria=?, imagen=?, marca=?, referencia=?, especificaciones=?, imagen2=?, imagen3=? WHERE id=?`;
+    db.query(sql, [nombre, descripcion, precio, stock, categoria, imagen, marca || null, referencia || null, especificaciones || null, imagen2 || null, imagen3 || null, req.params.id], (err) => {
+        if (err) {
+            console.error('Error actualizando producto:', err);
+            return res.status(500).json({ error: 'Error al actualizar producto' });
+        }
+        res.json({ mensaje: 'Producto actualizado' });
+    });
+});
 app.use((req, res) => res.status(404).send('Página no encontrada'));

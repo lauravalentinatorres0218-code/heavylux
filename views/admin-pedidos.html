@@ -69,9 +69,9 @@
                         <td>$${Number(o.total).toLocaleString('es-CO')}</td>
                         <td>${esc(o.metodo_pago)}</td>
                         <td>${esc(o.pago_detalle)}</td>
-                        <td>${esc(o.estado)}</td>
+                        <td><span class="estado estado-${esc(o.estado)}">${esc(o.estado)}</span></td>
                         <td>
-                            <select onchange="cambiarEstadoPedido(${o.id}, this.value)">
+                            <select class="sel-estado" onchange="cambiarEstadoPedido(${o.id}, this.value)">
                                 <option value="pendiente" ${o.estado === 'pendiente' ? 'selected' : ''}>Pendiente</option>
                                 <option value="pagado" ${o.estado === 'pagado' ? 'selected' : ''}>Pagado</option>
                                 <option value="enviado" ${o.estado === 'enviado' ? 'selected' : ''}>Enviado</option>
@@ -91,5 +91,6 @@
     }
     cargarPedidos();
 </script>
+<script src="/js/carrito-contador.js"></script>
 </body>
 </html>
