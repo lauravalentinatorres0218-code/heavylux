@@ -445,17 +445,21 @@ html { scroll-behavior: smooth; }
 }
 @media (max-width: 640px) {
     .carrito-item {
-        grid-template-columns: 1fr auto;
-        grid-template-areas:
-            "nombre quitar"
-            "cant   precio";
-        gap: 10px 12px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto auto;
+        grid-template-areas: none;
+        gap: 8px;
         align-items: center;
+        font-size: 12px;
     }
-    .carrito-item > span:nth-child(1) { grid-area: nombre; }
-    .carrito-item > span:nth-child(2) { grid-area: cant; justify-content: flex-start; }
-    .carrito-item > span:nth-child(3) { grid-area: precio; text-align: right; }
-    .carrito-item > button:last-child { grid-area: quitar; justify-self: end; }
+    .carrito-item > span:nth-child(1),
+    .carrito-item > span:nth-child(2),
+    .carrito-item > span:nth-child(3),
+    .carrito-item > button:last-child { grid-area: auto; }
+    .carrito-item > span:nth-child(1) { overflow-wrap: anywhere; }
+    .carrito-item > span:nth-child(2) { display: flex; align-items: center; gap: 4px; justify-content: center; }
+    .carrito-item > span:nth-child(3) { text-align: right; white-space: nowrap; }
+    .carrito-item button { padding: 5px 8px; font-size: 12px; }
 
     #carrito-contenido .btn-primary,
     #carrito-contenido .btn-secondary {
