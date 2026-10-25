@@ -107,8 +107,10 @@
                 .then(res => res.json())
                 .then(data => {
                     if (data.error) { alert(data.error); return; }
-                    localStorage.removeItem('carrito');
+                                        if (data.error) { alert(data.error); return; }
                     if (pedido.metodo_pago === 'Contraentrega') {
+                        localStorage.removeItem('carrito');
+                        if (window.actualizarContadorCarrito) actualizarContadorCarrito();
                         cont.innerHTML = '<div class="checkout-ok"><h2>¡Pedido recibido!</h2>' +
                             '<p>Tu número de pedido es <strong>#' + data.id + '</strong>.</p>' +
                             '<p>Total: $' + Number(data.total).toLocaleString('es-CO') + '</p>' +

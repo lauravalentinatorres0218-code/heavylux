@@ -132,6 +132,8 @@
         if (msg) msg.remove();
         fetch('/api/pedidos/' + id + '/pagar', { method: 'POST' }).then(r => r.json()).then(d => {
             if (d.error) { alert(d.error); return; }
+            localStorage.removeItem('carrito');
+            if (window.actualizarContadorCarrito) actualizarContadorCarrito();
             document.getElementById('m-ref').textContent = 'ID de la transacción: ' + d.referencia;
             document.getElementById('m-fecha').textContent = 'Fecha: ' + new Date(d.fecha).toLocaleDateString('es-CO');
             document.getElementById('m-valor').textContent = 'Valor: $' + Number(pedido.total).toLocaleString('es-CO');
@@ -139,5 +141,6 @@
         });
     });
 </script>
+<script src="/js/carrito-contador.js"></script>
 </body>
 </html>
